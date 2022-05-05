@@ -215,21 +215,21 @@ function next() {
 	$('#imageB').css('border','0px solid black');
 	
     if (p.is_practice && (p.im_num == p.npractice)) {
-    	
-		p.is_practice = false;
-		
-    	$('#feedback').hide();	
-    	$('#imageA').hide();
-    	$('#imageB').hide();
-    	$('#imageA_div').hide();
-    	$('#imageB_div').hide();
-    	$('#short_instructions').html("");
+      
+    p.is_practice = false;
+    
+      $('#feedback').hide();	
+      $('#imageA').hide();
+      $('#imageB').hide();
+      $('#imageA_div').hide();
+      $('#imageB_div').hide();
+      $('#short_instructions').html("");
         
-    	$('#experiment_start').show();
-    	
-    	return;
+      $('#experiment_start').show();
+      
+      return;
     }
-	else if (p.im_num == p.total_num_ims) {
+  else if (p.im_num == p.total_num_ims) {
 		
 		end();
 		
@@ -288,31 +288,31 @@ function submitAnswer(answer) {
 	$('#trial_num').hide();
 	
 	if (p.is_practice) {
-		   var is_correct = (p.gt_side[p.im_num]!=answer);
-		
-		   if (is_correct) {
-	       	   $('#feedback').html('<img width=24px src="http://web.mit.edu/phillipi/Public/colorization/check.png"/><br><span style="color:green;">You are correct!</span>');
-		   }
-		   else {
-			   $('#feedback').html('<span style="color:#cc0000">Incorrect. That image was real.</span>');
-		   }
-		   
-		   if (answer=='left') {
-			   if (is_correct) {
-	      	   		$('#imageA').css('border','6px solid green');
-		   	   }
-			   else {
-			   		$('#imageA').css('border','6px solid #cc0000');
-			   }
-		   }
-		   else {
-			   if (is_correct) {
-	      	   		$('#imageB').css('border','6px solid green');
-		   	   }
-			   else {
-			   		$('#imageB').css('border','6px solid #cc0000');
-			   }
-		   }
+      var is_correct = (p.gt_side[p.im_num]!=answer);
+  
+      if (is_correct) {
+            $('#feedback').html('<img width=24px src="http://web.mit.edu/phillipi/Public/colorization/check.png"/><br><span style="color:green;">You are correct!</span>');
+      }
+      else {
+        $('#feedback').html('<span style="color:#cc0000">Incorrect. That image was real.</span>');
+      }
+      
+      if (answer=='left') {
+        if (is_correct) {
+              $('#imageA').css('border','6px solid green');
+          }
+        else {
+          $('#imageA').css('border','6px solid #cc0000');
+        }
+      }
+      else {
+        if (is_correct) {
+              $('#imageB').css('border','6px solid green');
+          }
+        else {
+          $('#imageB').css('border','6px solid #cc0000');
+        }
+      }
 		
 		$('#feedback').show();
 		$('#short_instructions').html('');
@@ -324,10 +324,10 @@ function submitAnswer(answer) {
 			$('#feedbackA').html('Fake');
 			$('#feedbackB').html('Real');
 		}
-   		$('#imageA').show();
-   		$('#imageB').show();
-   		$('#imageA_div').show();
-   		$('#imageB_div').show();
+      $('#imageA').show();
+      $('#imageB').show();
+      $('#imageA_div').show();
+      $('#imageB_div').show();
 		
 		$("#selection"+(p.im_num)).val(answer);
 		
@@ -403,24 +403,24 @@ function restartExperiment() {
   <body>
   <div id = "content_div">
 	<div id="images_div" style = "display:none" width = "100%" align = "center">
-	  <div id="short_instructions" style="display:none;"></div>
+    <div id="short_instructions" style="display:none;"></div>
       <div id="imageA_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-		  <div id="feedbackA" style="display:block; height: 30px"></div><img id="imageA" style="display:block;" width="{{IM_WIDTH}}px"/>
-		  <div id="buttonA" style="position:relative; width:100%; height:100%"><button type="button" onclick="submitAnswer('left')" style="position:absolute; width:100%; height:100%; top:0; left:0; z-index: 10; font-size:14pt">Left image</button></div>
-	  </div>
-	  <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-		  <div id="feedbackB" style="display:block; height: 30px"]></div><img id="imageB" style="display:block;" width="{{IM_WIDTH}}px"/>
-		  <div id="buttonB" style="position:relative; width:100%; height:100%"><button type="button" onclick="submitAnswer('right')" style="position:absolute; width:100%; height:100%; top:0; left:0; z-index: 10; font-size:14pt">Right image</button></div>
-	  </div>
+      <div id="feedbackA" style="display:block; height: 30px"></div><img id="imageA" style="display:block;" width="{{IM_WIDTH}}px"/>
+      <div id="buttonA" style="position:relative; width:100%; height:100%"><button type="button" onclick="submitAnswer('left')" style="position:absolute; width:100%; height:100%; top:0; left:0; z-index: 10; font-size:14pt">Left image</button></div>
+    </div>
+    <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
+      <div id="feedbackB" style="display:block; height: 30px"]></div><img id="imageB" style="display:block;" width="{{IM_WIDTH}}px"/>
+      <div id="buttonB" style="position:relative; width:100%; height:100%"><button type="button" onclick="submitAnswer('right')" style="position:absolute; width:100%; height:100%; top:0; left:0; z-index: 10; font-size:14pt">Right image</button></div>
+    </div>
     </div>
 
     <div id= "feedback" align=center style="display:none"></div>
 	
     <div id = "experiment_start" style="width: 800px; margin: 0 auto; text-align: left; display:none">
       <br>You've completed the practice exercise!  Click "Continue" to continue on to the main task. The main task will be identical except that you won't be told whether or not your guess was correct.</br>
-	  <div id = "buttons_continue" align=center>
-		  <button id="continue_button" type="button" onClick="continue_to_main_expt()">Continue!</button>
-	  </div>
+    <div id = "buttons_continue" align=center>
+      <button id="continue_button" type="button" onClick="continue_to_main_expt()">Continue!</button>
+    </div>
     </div>
 	
 	<div id="trial_num" style="display:none"></div>
@@ -437,14 +437,14 @@ function restartExperiment() {
     </div>
 
     
-	  <div id = "buttons_start" align=center>
-      	<br>
-      	<button id="start_button" type="button" onClick="startExperiment()" disabled=true><span style='font-size:16pt'>Please accept HIT to start</span></button>
-		
-      	<div id = "not_assigned" align=left style = "display:none"">
-      		<p>Please accept the HIT to begin!</p>
-      	</div>
-	  </div>
+    <div id = "buttons_start" align=center>
+        <br>
+        <button id="start_button" type="button" onClick="startExperiment()" disabled=true><span style='font-size:16pt'>Please accept HIT to start</span></button>
+    
+        <div id = "not_assigned" align=left style = "display:none"">
+          <p>Please accept the HIT to begin!</p>
+        </div>
+    </div>
 
     <div id="done" align = "center" style = "display:none"> 
         Thank you! You have completed the experiment.<br><br><div id="score"></div> 
