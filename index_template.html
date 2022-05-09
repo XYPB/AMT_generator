@@ -146,35 +146,49 @@ function setBodyHeight() {
   $('body').height(wh); // body height = window height
 }
 
-function sequence_helper(gt_side,image_left,image_right) {
-	var curr_im = null;
-	p.gt_side.push(gt_side);
-	curr_im = new Image();
-	curr_im.src = base_url + image_left;
-	p.images_left.push(curr_im);
-	curr_im = new Image();
-	curr_im.src = base_url + image_right;
-	p.images_right.push(curr_im);
+function sequence_helper(algo_A, algo_B, target_video, condition_video, image_A, image_B) {
+	var curr_v = null;
+	p.algo_A.push(algo_A);
+  p.algo_B.push(algo_B);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + target_video;
+	p.target_video.push(curr_v);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + condition_video;
+	p.condition_video.push(curr_v);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + image_A;
+	p.image_A.push(curr_v);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + image_B;
+	p.image_B.push(curr_v);
+	
 }
 
 function makeExperiment() {
-    p.is_practice = false;
+  p.is_practice = false;
 	p.im_num = 0;
-    p.initialized = false;
-    p.is_assigned = ($.getUrlVar('assignmentId') != 'ASSIGNMENT_ID_NOT_AVAILABLE');
-    p.practice_intro_shown = false;
-    p.experiment_intro_shown = false;
+  p.initialized = false;
+  p.is_assigned = ($.getUrlVar('assignmentId') != 'ASSIGNMENT_ID_NOT_AVAILABLE');
+  p.practice_intro_shown = false;
+  p.experiment_intro_shown = false;
 	p.npractice = {{N_PRACTICE}};
 	p.total_num_ims = {{TOTAL_NUM_IMS}};
 	
-	p.gt_side = [];
-	p.images_left = [];
-	p.images_right = [];
-	
-	
+	p.algo_A = [];
+  p.algo_B = [];
+  p.target_video = [];
+  p.condition_video = [];
+	p.image_A = [];
+	p.image_B = [];
+
 	{{SEQUENCE}}
-		
-    return this;
+
+  return this;
 }
 
 
@@ -207,28 +221,27 @@ function continue_to_main_expt() {
 }
 
 function next() {
-	
-	$('#feedbackA').html('');
-	$('#feedbackB').html('');
-	
 	$('#imageA').css('border','0px solid black');
 	$('#imageB').css('border','0px solid black');
 	
-    if (p.is_practice && (p.im_num == p.npractice)) {
-      
+  if (p.is_practice && (p.im_num == p.npractice)) {
+
     p.is_practice = false;
-    
-      $('#feedback').hide();	
-      $('#imageA').hide();
-      $('#imageB').hide();
-      $('#imageA_div').hide();
-      $('#imageB_div').hide();
-      $('#short_instructions').html("");
-        
-      $('#experiment_start').show();
-      
-      return;
-    }
+  
+    $('#target').hide();
+    $('#conditional').hide();
+    $('#imageA').hide();
+    $('#imageB').hide();
+    $('#target_div').show();
+    $('#conditional_div').show();
+    $('#imageA_div').show();
+    $('#imageB_div').show();
+    $('#short_instructions').html("");
+
+    $('#experiment_start').show();
+
+    return;
+  }
   else if (p.im_num == p.total_num_ims) {
 		
 		end();
@@ -242,12 +255,15 @@ function next() {
 	
 	var offset_time = 0;
 	
-    $('#feedback').hide();	
+  $('#target').hide();
+	$('#conditional').hide();
 	$('#imageA').hide();
 	$('#imageB').hide();
 	$('#short_instructions').html("");
 	$('#short_instructions').show();
-	$('#imageA_div').show();
+	$('#target_div').show();
+	$('#conditional_div').show();
+  $('#imageA_div').show();
 	$('#imageB_div').show();
 	
 	if (p.is_practice) {
@@ -256,118 +272,76 @@ function next() {
 	else {
 		$('#trial_num').html("<br><center>Trial " + (p.im_num+1-p.npractice) + " out of " + (p.total_num_ims-p.npractice) + "</center>");
 	}
-	
-	var imageA = document.getElementById('imageA');
-	imageA.src = p.images_left[p.im_num].src;
-	
-	if (first_trial) {
-		offset_time += isi;
+
+  var target_video = document.getElementById('target');
+	target_video.src = p.target_video[p.im_num].src;
+  
+  if (first_trial) {
+    offset_time += isi;
 		first_trial = false;
 	}
+  $('#target').delay(offset_time+isi*5).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*5+display_time;
+
+  var condition_video = document.getElementById('conditional');
+	condition_video.src = p.condition_video[p.im_num].src;
+	$('#conditional').delay(offset_time+isi*4).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*4+display_time;
+
+	var imageA = document.getElementById('imageA');
+	imageA.src = p.image_A[p.im_num].src;
 	$('#imageA').delay(offset_time+isi*3).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*3+display_time;
 	
 	var imageB = document.getElementById('imageB');
-	imageB.src = p.images_right[p.im_num].src;
-	
+	imageB.src = p.image_B[p.im_num].src;
 	$('#imageB').delay(offset_time+isi*2).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*2+display_time;
 	
 	fade_time = 50;
 	setTimeout(function() { 
 		$('#trial_num').show(); 
 		$('#short_instructions').html("{{SHORT_INSTRUCTIONS}}");
-		$('#buttonA').fadeIn(fade_time);
-		$('#buttonB').fadeIn(fade_time);
+		$('#selection_div').fadeIn(fade_time);
 	}, offset_time+100);
 }
 
 
-function submitAnswer(answer) {
+function submitAnswer() {
 	
-	$('#buttonA').hide();
-	$('#buttonB').hide();
+	$('#selection_div').hide();
 	$('#trial_num').hide();
 	
-	if (p.is_practice) {
-      var is_correct = (p.gt_side[p.im_num]!=answer);
+  var form_data = $('form').serializeArray();
+  form_data.forEach((i, input) => {
+    $("#selection_" + (input.name) + (p.im_num)).val(input.value);
+  })
+
+  $('#target').hide();
+	$('#conditional').hide();
+  $('#imageA').hide();
+  $('#imageB').hide();
+  $('#target_div').hide();
+	$('#conditional_div').hide();
+  $('#imageA_div').hide();
+  $('#imageB_div').hide();
   
-      if (is_correct) {
-            $('#feedback').html('<img width=24px src="http://web.mit.edu/phillipi/Public/colorization/check.png"/><br><span style="color:green;">You are correct!</span>');
-      }
-      else {
-        $('#feedback').html('<span style="color:#cc0000">Incorrect. That image was real.</span>');
-      }
-      
-      if (answer=='left') {
-        if (is_correct) {
-              $('#imageA').css('border','6px solid green');
-          }
-        else {
-          $('#imageA').css('border','6px solid #cc0000');
-        }
-      }
-      else {
-        if (is_correct) {
-              $('#imageB').css('border','6px solid green');
-          }
-        else {
-          $('#imageB').css('border','6px solid #cc0000');
-        }
-      }
-		
-		$('#feedback').show();
-		$('#short_instructions').html('');
-		if (p.gt_side[p.im_num]=='left') {
-			$('#feedbackA').html('Real');
-			$('#feedbackB').html('Fake');
-		}
-		else {
-			$('#feedbackA').html('Fake');
-			$('#feedbackB').html('Real');
-		}
-      $('#imageA').show();
-      $('#imageB').show();
-      $('#imageA_div').show();
-      $('#imageB_div').show();
-		
-		$("#selection"+(p.im_num)).val(answer);
-		
-		p.im_num = p.im_num+1;
-				
-		setTimeout(function() { next(); }, 2400);
-	}
-	else {
-		var is_correct = (p.gt_side[p.im_num]!=answer);
-		num_correct += is_correct;
-		
-		$('#imageA').hide();
-		$('#imageB').hide();
-		$('#imageA_div').hide();
-		$('#imageB_div').hide();
-		
-		$("#selection"+(p.im_num)).val(answer);
-		
-		p.im_num = p.im_num+1;
-				
-		next();
-	}
+  p.im_num = p.im_num+1;
+  next();
 }
 
 function startExperiment() {
 
-    if (p == null) {
-        return;
-    }
-    
-    p.is_practice = true;
-	
-    $('#buttons_start').hide();
-    $('#long_info').hide();
-    $('#couhes').hide();
-    $('#teaser').hide();
+  if (p == null) {
+    return;
+  }
+  
+  p.is_practice = true;
 
-    $('#images_div').show();
+  $('#buttons_start').hide();
+  $('#long_info').hide();
+  $('#couhes').hide();
+  $('#teaser').hide();
 
-    next();
+  $('#images_div').show();
+
+  next();
 }
 
 
@@ -377,10 +351,11 @@ function init() {
 	
 	makeExperiment();
 	
-	$('#imageA').hide();
-	$('#imageB').hide();
-	$('#buttonA').hide();
-	$('#buttonB').hide();
+	$('#target').hide();
+	$('#conditional').hide();
+  $('#imageA').hide();
+  $('#imageB').hide();
+  $('#selection_div').hide();
 	
 	$("#submitButton").hide();
 	
@@ -392,78 +367,98 @@ function init() {
 
 $(document).ready(init);
 
-function restartExperiment() {
-}
-
 </script>
-    
-  </head>
+
+</head>
 
 
-  <body>
-  <div id = "content_div">
-	<div id="images_div" style = "display:none" width = "100%" align = "center">
-    <div id="short_instructions" style="display:none;"></div>
-      <div id="imageA_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-      <div id="feedbackA" style="display:block; height: 30px"></div><img id="imageA" style="display:block;" width="{{IM_WIDTH}}px"/>
-      <div id="buttonA" style="position:relative; width:100%; height:100%"><button type="button" onclick="submitAnswer('left')" style="position:absolute; width:100%; height:100%; top:0; left:0; z-index: 10; font-size:14pt">Left image</button></div>
-    </div>
-    <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-      <div id="feedbackB" style="display:block; height: 30px"]></div><img id="imageB" style="display:block;" width="{{IM_WIDTH}}px"/>
-      <div id="buttonB" style="position:relative; width:100%; height:100%"><button type="button" onclick="submitAnswer('right')" style="position:absolute; width:100%; height:100%; top:0; left:0; z-index: 10; font-size:14pt">Right image</button></div>
-    </div>
-    </div>
+<body>
+<div id = "content_div">
+<div id="images_div" style = "display:none" width = "100%" align = "center">
+  <div id="short_instructions" style="display:none;"></div>
 
-    <div id= "feedback" align=center style="display:none"></div>
-	
-    <div id = "experiment_start" style="width: 800px; margin: 0 auto; text-align: left; display:none">
-      <br>You've completed the practice exercise!  Click "Continue" to continue on to the main task. The main task will be identical except that you won't be told whether or not your guess was correct.</br>
-    <div id = "buttons_continue" align=center>
-      <button id="continue_button" type="button" onClick="continue_to_main_expt()">Continue!</button>
-    </div>
-    </div>
-	
-	<div id="trial_num" style="display:none"></div>
-    
-    <div id="short_info" align="center" style="width: 80%; margin: 0 auto; text-align: left; display:none" align = center>
-    </div>
-
-    <br>
-    <br>
-    
-    
-    <div id="long_info" style = "width:100%">
-        {{INSTRUCTIONS}}
-    </div>
-
-    
-    <div id = "buttons_start" align=center>
-        <br>
-        <button id="start_button" type="button" onClick="startExperiment()" disabled=true><span style='font-size:16pt'>Please accept HIT to start</span></button>
-    
-        <div id = "not_assigned" align=left style = "display:none"">
-          <p>Please accept the HIT to begin!</p>
-        </div>
-    </div>
-
-    <div id="done" align = "center" style = "display:none"> 
-        Thank you! You have completed the experiment.<br><br><div id="score"></div> 
-		<div><textarea id="comments" name="comments" rows="3" cols="31">Comments?</textarea></div><br><br>
-		Please click the submit button below to finish.
-    </div>
-
-    <div id="couhes">
-      <br>
-      <span id="informed_consent_text">{{CONSENT}}</span>
-    </div>
-
-    <br>
-    <br>
-    <br>
-    <br>
-
+  <div id="target_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
+    </div><video id='target' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Target Video</div>
   </div>
+
+  <div id="conditional_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
+    </div><video id='conditional' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Conditional Video</div>
+  </div>
+
+  <div id="imageA_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
+    <video id='imageA' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Video B</div>
+  </div>
+
+  <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
+    </div><video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Video A</div>
+  </div>
+
+  <div id="selection_div">
+    <form onsubmit="submitAnswer()">
+      <div id="sync" style="position:relative; width:100%; height:100%">
+        <p>Which video's sound (A or B) is synchronized with Target Video's action?</p>
+        <input type="radio" id="video_A_button" name="sync" value="Video A"><label for="video_A_button">Video A</label>
+        <input type="radio" id="video_B_button" name="sync" value="Video B"><label for="video_B_button">Video B</label>
+      </div>
+      <div id="timbre" style="position:relative; width:100%; height:100%">
+        <p>Which video's timbre (A or B) is closer to the Conditional Video?</p>
+        <input type="radio" id="video_A_button" name="timbre" value="Video A"><label for="video_A_button">Video A</label>
+        <input type="radio" id="video_B_button" name="timbre" value="Video B"><label for="video_B_button">Video B</label>
+      </div>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+
+</div>
+
+  <div id = "experiment_start" style="width: 800px; margin: 0 auto; text-align: left; display:none">
+    <br>You've completed the practice exercise!  Click "Continue" to continue on to the main task. The main task will be identical.</br>
+  <div id = "buttons_continue" align=center>
+    <button id="continue_button" type="button" onClick="continue_to_main_expt()">Continue!</button>
+  </div>
+  </div>
+
+<div id="trial_num" style="display:none"></div>
   
+  <div id="short_info" align="center" style="width: 80%; margin: 0 auto; text-align: left; display:none" align = center>
+  </div>
+
+  <br>
+  <br>
+  
+  
+  <div id="long_info" style = "width:100%">
+      {{INSTRUCTIONS}}
+  </div>
+
+  
+  <div id = "buttons_start" align=center>
+      <br>
+      <button id="start_button" type="button" onClick="startExperiment()" disabled=true><span style='font-size:16pt'>Please accept HIT to start</span></button>
+  
+      <div id = "not_assigned" align=left style = "display:none"">
+        <p>Please accept the HIT to begin!</p>
+      </div>
+  </div>
+
+  <div id="done" align = "center" style = "display:none"> 
+      Thank you! You have completed the experiment.<br><br><div id="score"></div> 
+  <div><textarea id="comments" name="comments" rows="3" cols="31">Comments?</textarea></div><br><br>
+  Please click the submit button below to finish.
+  </div>
+
+  <div id="couhes">
+    <br>
+    <span id="informed_consent_text">{{CONSENT}}</span>
+  </div>
+
+  <br>
+  <br>
+  <br>
+  <br>
+
+</div>
+
 {{SELECTION}}
 
 
