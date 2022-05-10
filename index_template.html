@@ -202,9 +202,8 @@ function assert(x, msg) { if (!x) { throw("Assertion failed: " + msg); } }
 function now() { return (new Date()).getTime() / 1000.; }
 
 function end() {
-    $('#short_instructions').hide();
-	$('#score').html("You got " + (Math.round(100*(num_correct/(p.total_num_ims-p.npractice)))) + "% correct.<br><br>");
-    $('#done').show();
+  $('#short_instructions').hide();
+  $('#done').show();
 	$("#submitButton").show();
 }
 
