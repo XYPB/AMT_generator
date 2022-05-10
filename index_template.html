@@ -308,10 +308,20 @@ function submitAnswer() {
 	$('#selection_div').hide();
 	$('#trial_num').hide();
 	
-  var form_data = $('form').serializeArray();
-  form_data.forEach((input, i) => {
-    $("#selection_" + (input.name) + (p.im_num)).val(input.value);
-  })
+  if (document.getElementById('video_A_button_sync').checked) {
+    $("#selection_sync" + (p.im_num)).val('Video A');
+    document.getElementById('video_A_button_sync').checked = false;
+  } else if (document.getElementById('video_B_button_sync').checked) {
+    $("#selection_sync" + (p.im_num)).val('Video B');
+    document.getElementById('video_B_button_sync').checked = false;
+  }
+  if (document.getElementById('video_A_button_timbre').checked) {
+    $("#selection_timbre" + (p.im_num)).val('Video A');
+    document.getElementById('video_A_button_timbre').checked = false;
+  } else if (document.getElementById('video_B_button_timbre').checked) {
+    $("#selection_timbre" + (p.im_num)).val('Video B');
+    document.getElementById('video_B_button_timbre').checked = false;
+  }
 
   $('#target').hide();
 	$('#conditional').hide();
@@ -321,15 +331,7 @@ function submitAnswer() {
 	$('#conditional_div').hide();
   $('#imageA_div').hide();
   $('#imageB_div').hide();
-  var selectionInput = null;
-  selectionInput = document.getElementById('video_A_button_sync');
-  selectionInput.checked = false;
-  selectionInput = document.getElementById('video_B_button_sync');
-  selectionInput.checked = false;
-  selectionInput = document.getElementById('video_A_button_timbre');
-  selectionInput.checked = false;
-  selectionInput = document.getElementById('video_B_button_timbre');
-  selectionInput.checked = false;
+  
 
   p.im_num = p.im_num+1;
   next();
@@ -405,22 +407,18 @@ $(document).ready(init);
   <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
     <video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for='imageB'>Video B</label>
   </div>
-
   <div id="selection_div">
-    <form onsubmit="submitAnswer()" target="iframe">
-      <div id="sync" style="position:relative; width:100%; height:100%">
-        <p>Which video's sound (A or B) is <b>synchronized</b> with <b>Target</b> Video's action?</p>
-        <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video A</label>
-        <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video B</label>
-      </div>
-      <div id="timbre" style="position:relative; width:100%; height:100%">
-        <p>Which video's <b>timbre</b> (A or B) is closer to the <b>Conditional</b> Video?</p>
-        <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video A</label>
-        <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video B</label>
-      </div>
-      <input type="submit" value="Submit">
-    </form>
-    <iframe id="iframe" name="iframe" style="display:none"></iframe>
+    <div id="sync" style="position:relative; width:100%;">
+      <p>Which video's sound (A or B) is <b>synchronized</b> with <b>Target</b> Video's action?</p>
+      <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video A</label>
+      <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video B</label>
+    </div>
+    <div id="timbre" style="position:relative; width:100%;">
+      <p>Which video's <b>timbre</b> (A or B) is closer to the <b>Conditional</b> Video?</p>
+      <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video A</label>
+      <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video B</label>
+    </div>
+    <button type="button" onclick="submitAnswer()" style="position:relative; width:40%;">Submit</button>
   </div>
 
 </div>
