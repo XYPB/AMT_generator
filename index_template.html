@@ -91,7 +91,7 @@
 <script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
 <script type="text/javascript">
 (function(){
-    var ut_id = {{UT_ID}};
+    var ut_id = "{{UT_ID}}";
     if (UTWorkerLimitReached(ut_id)) {
         document.getElementById('mturk_form').style.display = 'none';
         document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
@@ -232,10 +232,10 @@ function next() {
     $('#conditional').hide();
     $('#imageA').hide();
     $('#imageB').hide();
-    $('#target_div').show();
-    $('#conditional_div').show();
-    $('#imageA_div').show();
-    $('#imageB_div').show();
+    $('#target_div').hide();
+    $('#conditional_div').hide();
+    $('#imageA_div').hide();
+    $('#imageB_div').hide();
     $('#short_instructions').html("");
 
     $('#experiment_start').show();
@@ -280,19 +280,19 @@ function next() {
     offset_time += isi;
 		first_trial = false;
 	}
-  $('#target').delay(offset_time+isi*5).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*5+display_time;
+  $('#target').show();
 
   var condition_video = document.getElementById('conditional');
 	condition_video.src = p.condition_video[p.im_num].src;
-	$('#conditional').delay(offset_time+isi*4).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*4+display_time;
+	$('#conditional').show();
 
 	var imageA = document.getElementById('imageA');
 	imageA.src = p.image_A[p.im_num].src;
-	$('#imageA').delay(offset_time+isi*3).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*3+display_time;
+	$('#imageA').show();
 	
 	var imageB = document.getElementById('imageB');
 	imageB.src = p.image_B[p.im_num].src;
-	$('#imageB').delay(offset_time+isi*2).fadeIn(0).delay(display_time).fadeOut(0); offset_time += isi*2+display_time;
+	$('#imageB').show();
 	
 	fade_time = 50;
 	setTimeout(function() { 
@@ -309,7 +309,7 @@ function submitAnswer() {
 	$('#trial_num').hide();
 	
   var form_data = $('form').serializeArray();
-  form_data.forEach((i, input) => {
+  form_data.forEach((input, i) => {
     $("#selection_" + (input.name) + (p.im_num)).val(input.value);
   })
 
@@ -321,7 +321,16 @@ function submitAnswer() {
 	$('#conditional_div').hide();
   $('#imageA_div').hide();
   $('#imageB_div').hide();
-  
+  var selectionInput = null;
+  selectionInput = document.getElementById('video_A_button_sync');
+  selectionInput.checked = false;
+  selectionInput = document.getElementById('video_B_button_sync');
+  selectionInput.checked = false;
+  selectionInput = document.getElementById('video_A_button_timbre');
+  selectionInput.checked = false;
+  selectionInput = document.getElementById('video_B_button_timbre');
+  selectionInput.checked = false;
+
   p.im_num = p.im_num+1;
   next();
 }
@@ -355,6 +364,10 @@ function init() {
 	$('#conditional').hide();
   $('#imageA').hide();
   $('#imageB').hide();
+  $('#target_div').hide();
+	$('#conditional_div').hide();
+  $('#imageA_div').hide();
+  $('#imageB_div').hide();
   $('#selection_div').hide();
 	
 	$("#submitButton").hide();
@@ -378,35 +391,36 @@ $(document).ready(init);
   <div id="short_instructions" style="display:none;"></div>
 
   <div id="target_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    </div><video id='target' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Target Video</div>
+    <video id='target' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="target">Target Video</label>
   </div>
 
   <div id="conditional_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    </div><video id='conditional' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Conditional Video</div>
+    <video id='conditional' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="conditional">Conditional Video</label>
   </div>
 
   <div id="imageA_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='imageA' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Video B</div>
+    <video id='imageA' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="imageA">Video A</label>
   </div>
 
   <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    </div><video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><div>Video A</div>
+    <video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for='imageB'>Video B</label>
   </div>
 
   <div id="selection_div">
-    <form onsubmit="submitAnswer()">
+    <form onsubmit="submitAnswer()" target="iframe">
       <div id="sync" style="position:relative; width:100%; height:100%">
-        <p>Which video's sound (A or B) is synchronized with Target Video's action?</p>
-        <input type="radio" id="video_A_button" name="sync" value="Video A"><label for="video_A_button">Video A</label>
-        <input type="radio" id="video_B_button" name="sync" value="Video B"><label for="video_B_button">Video B</label>
+        <p>Which video's sound (A or B) is <b>synchronized</b> with <b>Target</b> Video's action?</p>
+        <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video A</label>
+        <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video B</label>
       </div>
       <div id="timbre" style="position:relative; width:100%; height:100%">
-        <p>Which video's timbre (A or B) is closer to the Conditional Video?</p>
-        <input type="radio" id="video_A_button" name="timbre" value="Video A"><label for="video_A_button">Video A</label>
-        <input type="radio" id="video_B_button" name="timbre" value="Video B"><label for="video_B_button">Video B</label>
+        <p>Which video's <b>timbre</b> (A or B) is closer to the <b>Conditional</b> Video?</p>
+        <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video A</label>
+        <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video B</label>
       </div>
       <input type="submit" value="Submit">
     </form>
+    <iframe id="iframe" name="iframe" style="display:none"></iframe>
   </div>
 
 </div>
