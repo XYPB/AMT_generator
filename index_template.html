@@ -303,25 +303,30 @@ function next() {
 
 
 function submitAnswer() {
-	
-	$('#selection_div').hide();
-	$('#trial_num').hide();
-	
-  if (document.getElementById('video_A_button_sync').checked) {
-    $("#selection_sync" + (p.im_num)).val('Video A');
+
+  if ((!document.getElementById('video_A_button_sync').checked && !document.getElementById('video_B_button_sync').checked) 
+      || (!document.getElementById('video_A_button_timbre').checked && !document.getElementById('video_B_button_timbre').checked)) {
+        alert("You need to provide an answer for all the questions!");
+        return;
+      }
+
+	if (document.getElementById('video_A_button_sync').checked) {
+    $("#selection_sync" + (p.im_num)).val(p.algo_A[p.im_num]);
     document.getElementById('video_A_button_sync').checked = false;
   } else if (document.getElementById('video_B_button_sync').checked) {
-    $("#selection_sync" + (p.im_num)).val('Video B');
+    $("#selection_sync" + (p.im_num)).val(p.algo_B[p.im_num]);
     document.getElementById('video_B_button_sync').checked = false;
   }
   if (document.getElementById('video_A_button_timbre').checked) {
-    $("#selection_timbre" + (p.im_num)).val('Video A');
+    $("#selection_timbre" + (p.im_num)).val(p.algo_A[p.im_num]);
     document.getElementById('video_A_button_timbre').checked = false;
   } else if (document.getElementById('video_B_button_timbre').checked) {
-    $("#selection_timbre" + (p.im_num)).val('Video B');
+    $("#selection_timbre" + (p.im_num)).val(p.algo_B[p.im_num]);
     document.getElementById('video_B_button_timbre').checked = false;
   }
 
+  $('#selection_div').hide();
+	$('#trial_num').hide();
   $('#target').hide();
 	$('#conditional').hide();
   $('#imageA').hide();
@@ -389,33 +394,36 @@ $(document).ready(init);
 <body>
 <div id = "content_div">
 <div id="images_div" style = "display:none" width = "100%" align = "center">
-  <div id="short_instructions" style="display:none;"></div>
+  <div id="short_instructions" style="display:none;"></div> <div><br><br></div>
 
   <div id="target_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='target' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="target">Target Video</label>
+    <video id='target' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="target">Video #1(silent)</label>
   </div>
 
   <div id="conditional_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='conditional' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="conditional">Conditional Video</label>
+    <video id='conditional' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="conditional">Video #2</label>
   </div>
 
+  <hr>
+
   <div id="imageA_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='imageA' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="imageA">Video A</label>
+    <video id='imageA' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="imageA">Video #3(generated)</label>
   </div>
 
   <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for='imageB'>Video B</label>
+    <video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for='imageB'>Video #4(generated)</label>
   </div>
+  <hr>
   <div id="selection_div">
     <div id="sync" style="position:relative; width:100%;">
-      <p>Which video's sound (A or B) is <b>synchronized</b> with <b>Target</b> Video's action?</p>
-      <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video A</label>
-      <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video B</label>
+      <p>Which output video's audio is better <i>synchronized in time</i> with the action depicted in the <b>Video #1</b>?</p>
+      <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video #3</label>
+      <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video #4</label>
     </div>
     <div id="timbre" style="position:relative; width:100%;">
-      <p>Which video's <b>timbre</b> (A or B) is closer to the <b>Conditional</b> Video?</p>
-      <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video A</label>
-      <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video B</label>
+      <p>Which output video's audio sounds like the <i>material/object</i> presented in the <b>Video #2</b>?</p>
+      <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video #3</label>
+      <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video #4</label>
     </div>
     <button type="button" onclick="submitAnswer()" style="position:relative; width:40%;">Submit</button>
   </div>
