@@ -227,11 +227,11 @@ function next() {
 
     p.is_practice = false;
   
-    $('#target').hide();
+    // $('#target').hide();
     $('#conditional').hide();
     $('#imageA').hide();
     $('#imageB').hide();
-    $('#target_div').hide();
+    // $('#target_div').hide();
     $('#conditional_div').hide();
     $('#imageA_div').hide();
     $('#imageB_div').hide();
@@ -254,13 +254,13 @@ function next() {
 	
 	var offset_time = 0;
 	
-  $('#target').hide();
+  // $('#target').hide();
 	$('#conditional').hide();
 	$('#imageA').hide();
 	$('#imageB').hide();
 	$('#short_instructions').html("");
 	$('#short_instructions').show();
-	$('#target_div').show();
+	// $('#target_div').show();
 	$('#conditional_div').show();
   $('#imageA_div').show();
 	$('#imageB_div').show();
@@ -272,14 +272,14 @@ function next() {
 		$('#trial_num').html("<br><center>Trial " + (p.im_num+1-p.npractice) + " out of " + (p.total_num_ims-p.npractice) + "</center>");
 	}
 
-  var target_video = document.getElementById('target');
-	target_video.src = p.target_video[p.im_num].src;
+  // var target_video = document.getElementById('target');
+	// target_video.src = p.target_video[p.im_num].src;
   
   if (first_trial) {
     offset_time += isi;
 		first_trial = false;
 	}
-  $('#target').show();
+  // $('#target').show();
 
   var condition_video = document.getElementById('conditional');
 	condition_video.src = p.condition_video[p.im_num].src;
@@ -327,11 +327,11 @@ function submitAnswer() {
 
   $('#selection_div').hide();
 	$('#trial_num').hide();
-  $('#target').hide();
+  // $('#target').hide();
 	$('#conditional').hide();
   $('#imageA').hide();
   $('#imageB').hide();
-  $('#target_div').hide();
+  // $('#target_div').hide();
 	$('#conditional_div').hide();
   $('#imageA_div').hide();
   $('#imageB_div').hide();
@@ -366,11 +366,11 @@ function init() {
 	
 	makeExperiment();
 	
-	$('#target').hide();
+	// $('#target').hide();
 	$('#conditional').hide();
   $('#imageA').hide();
   $('#imageB').hide();
-  $('#target_div').hide();
+  // $('#target_div').hide();
 	$('#conditional_div').hide();
   $('#imageA_div').hide();
   $('#imageB_div').hide();
@@ -396,34 +396,34 @@ $(document).ready(init);
 <div id="images_div" style = "display:none" width = "100%" align = "center">
   <div id="short_instructions" style="display:none;"></div> <div><br><br></div>
 
-  <div id="target_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
+  <!-- <div id="target_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
     <video id='target' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="target">Video #1(silent)</label>
-  </div>
+  </div> -->
 
   <div id="conditional_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='conditional' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="conditional">Video #2</label>
+    <video id='conditional' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="conditional">Video #1</label>
   </div>
 
   <hr>
 
   <div id="imageA_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='imageA' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="imageA">Video #3(generated)</label>
+    <video id='imageA' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for="imageA">Video #2(generated)</label>
   </div>
 
   <div id="imageB_div" style="height:{{IM_DIV_HEIGHT}}px; width:{{IM_DIV_WIDTH}}px; display:inline-block; border:0px solid black;">
-    <video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for='imageB'>Video #4(generated)</label>
+    <video id='imageB' style="display:block;" controls height="{{IM_HEIGHT}}px">Your browser does not support MPEG4 video format.</video><label for='imageB'>Video #3(generated)</label>
   </div>
   <hr>
   <div id="selection_div">
     <div id="sync" style="position:relative; width:100%;">
-      <p>Which output video's audio is better <i>synchronized in time</i> with the action depicted in the <b>Video #1</b>?</p>
-      <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video #3</label>
-      <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video #4</label>
+      <p>In which output Video (#2 or #3) is the audio most <b>synchronized with the action</b> in the video?</p>
+      <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video #2</label>
+      <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video #3</label>
     </div>
     <div id="timbre" style="position:relative; width:100%;">
-      <p>Which output video's audio sounds like the <i>material/object</i> presented in the <b>Video #2</b>?</p>
-      <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video #3</label>
-      <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video #4</label>
+      <p>In which output Video (#2 or #3) does the audio sound most like the <b>object or material in Video #1</b>?</p>
+      <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video #2</label>
+      <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video #3</label>
     </div>
     <button type="button" onclick="submitAnswer()" style="position:relative; width:40%;">Submit</button>
   </div>
