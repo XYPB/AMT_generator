@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+from scipy import stats
 import argparse
 import os
 
@@ -45,18 +46,48 @@ if __name__ == "__main__":
             ans_sync[pair].append(df.at[i, f'Answer.selection_sync{j}'])
 
     timbre_ratio = {}
+    timbre_pval = {}
     sync_ratio = {}
+    sync_pval = {}
     for p in ans_timbre.keys():
         timbre_ratio[p] = len([t for t in ans_timbre[p] if t == args.gt]) / len(ans_timbre[p])
+        timbre_pval[p] = stats.binom_test(len([t for t in ans_timbre[p] if t == args.gt]), len(ans_timbre[p]), 0.5, alternative='greater')
         sync_ratio[p] = len([t for t in ans_sync[p] if t == args.gt]) / len(ans_sync[p])
+        sync_pval[p] = stats.binom_test(len([t for t in ans_sync[p] if t == args.gt]), len(ans_sync[p]), 0.5, alternative='greater')
     print('timbre', timbre_ratio, '\n')
     print('sync', sync_ratio)
+
+    print('timbre', timbre_pval, '\n')
+    print('sync', sync_pval)
     plt.figure()
-    plt.bar(range(len(timbre_ratio)), list(timbre_ratio.values()), label='timbre', alpha=0.5)
-    plt.bar(range(len(sync_ratio)), list(sync_ratio.values()), label='sync', alpha=0.5)
-    plt.xticks(range(len(timbre_ratio)), list(timbre_ratio.keys()), rotation=45)
+    x = range(len(timbre_ratio))
+    k = list(timbre_ratio.keys())
+    y = [timbre_ratio[kk] for kk in k]
+    ps = [timbre_pval[kk] for kk in k]
+    plt.bar(x, y, label='timbre', alpha=0.8)
+    plt.hlines(0.5, -0.5, len(x) - 0.5, color='orange', alpha=0.5)
+    for i in range(len(x)):
+        plt.text(x[i], y[i], f'{y[i]:.3f}', ha='center', va='bottom')
+        plt.text(x[i], y[i]+0.05, f'{ps[i]:.3f}', ha='center', va='bottom', color='blue')
+    plt.xticks(x, k, rotation=60)
+    plt.ylim(0, 1)
     plt.legend()
-    plt.savefig(os.path.join(args.res_dir, 'res.png'), dpi=300, bbox_inches='tight', pad_inches=0.2)
+    plt.savefig(os.path.join(args.res_dir, 'res_timbre.png'), dpi=300, bbox_inches='tight', pad_inches=0.2)
+
+    plt.figure()
+    x = range(len(sync_ratio))
+    k = list(sync_ratio.keys())
+    y = [sync_ratio[kk] for kk in k]
+    ps = [sync_pval[kk] for kk in k]
+    plt.bar(x, y, label='sync', alpha=0.8)
+    plt.hlines(0.5, -0.5, len(x) - 0.5, color='orange', alpha=0.5)
+    for i in range(len(x)):
+        plt.text(x[i], y[i], f'{y[i]:.3f}', ha='center', va='bottom')
+        plt.text(x[i], y[i]+0.03, f'{ps[i]:.4f}', ha='center', va='bottom', color='blue')
+    plt.xticks(x, k, rotation=60)
+    plt.ylim(0, 1)
+    plt.legend()
+    plt.savefig(os.path.join(args.res_dir, 'res_sync.png'), dpi=300, bbox_inches='tight', pad_inches=0.2)
 
 
 
