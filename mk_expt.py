@@ -51,7 +51,7 @@ def getDefaultOpts():
 	opt['Npractice'] = 5					 # number of practice trials per HIT (number of non-practice trials is opt['Npairs']-opt['Npractice'])
 	opt['Nhits'] = 40				 # number of HITs per algorithm
 	opt['vigilance_freq'] = 0.05 		   # percent of trials that are vigilance tests
-	opt['vigilance_idx'] = [20, 33, 85, 133, 152, 159]
+	opt['vigilance_idx'] = [133]
 	opt['use_vigilance'] = True			   # include vigilance trials (obviously fake images to check that Turkers are paying attention)	
 	opt['ut_id'] = '1b0b0ee36b5e7ce165f6cdcefa4bd68f'					# set this using http://uniqueturker.myleott.com/
 	opt['base_url'] = 'https://github.com/XYPB/AMT_test_data/raw/master/'				 # url where images to test are accessible as "opt['base_url']/n.png", for integers n
@@ -126,7 +126,7 @@ def mk_expt(expt_name):
 	which_ind0 = np.random.randint(I, size=H*N)
 	which_ind1 = which_ind0 if(opt['paired']) else np.random.randint(I, size=H*N)
 	which_side = np.random.randint(2, size=H*N)
-	vigilance = np.random.randint(N, size=H)
+	vigilance = np.random.randint(opt['Npractice'], N, size=H)
 	print(np.unique(which_alg, return_counts=True))
 
 	algo_A = []
@@ -142,17 +142,17 @@ def mk_expt(expt_name):
 		if idx == vigilance[h]:
 			vigilance_idx = opt['vigilance_idx'][np.random.randint(len(opt['vigilance_idx']))]
 			target_video.append(('target/'+opt['filename'](vigilance_idx)))
-			condition_video.append(('condition/'+opt['filename'](vigilance_idx)))
+			condition_video.append(('vigilance_cond/'+opt['filename'](vigilance_idx)))
 			if (cur_which_side==0):
 				algo_A.append('CondAVTransformer_VNet_randshift_2s_GH_vqgan')
 				algo_B.append(opt['vigilance_path'])
-				image_A.append(('%s/'+opt['filename'](vigilance_idx))%opt['gt_path'])
+				image_A.append(('target_sound/'+opt['filename'](vigilance_idx)))
 				image_B.append(('%s/'+opt['filename'](vigilance_idx))%opt['vigilance_path'])
 			else:
 				algo_A.append(opt['vigilance_path'])
 				algo_B.append('CondAVTransformer_VNet_randshift_2s_GH_vqgan')
 				image_A.append(('%s/'+opt['filename'](vigilance_idx))%opt['vigilance_path'])
-				image_B.append(('%s/'+opt['filename'](vigilance_idx))%opt['gt_path'])
+				image_B.append(('target_sound/'+opt['filename'](vigilance_idx)))
 			continue
 
 		cur_alg_name = opt['which_algs_paths'][cur_which_alg]
