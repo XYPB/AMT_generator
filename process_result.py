@@ -30,6 +30,8 @@ if __name__ == "__main__":
 
     ans_timbre = {}
     ans_sync = {}
+    vigilance_cnt = {}
+    vigilance_select = {'sync': {}, 'timbre': {}}
     col_names = df.columns.values.tolist()
     for i in range(df.shape[0]):
         for j in range(args.N_practice, args.N_imgs):
@@ -37,6 +39,25 @@ if __name__ == "__main__":
                 pair = 'vs_' + df.at[i, f'Input.algo_A{j}']
             else:
                 pair = 'vs_' + df.at[i, f'Input.algo_B{j}']
+
+            v_img = None
+            if df.at[i, f'Input.algo_A{j}'] == 'vigilance':
+                v_img = df.at[i, f'Input.image_A{j}'].split('/')[-1]
+            elif df.at[i, f'Input.algo_B{j}'] == 'vigilance':
+                v_img = df.at[i, f'Input.image_B{j}'].split('/')[-1]
+            if v_img is not None:
+                if v_img not in vigilance_cnt.keys():
+                    vigilance_cnt[v_img] = 0
+                vigilance_cnt[v_img] += 1
+                if df.at[i, f'Answer.selection_timbre{j}'] == 'vigilance':
+                    if v_img not in vigilance_select['timbre'].keys():
+                        vigilance_select['timbre'][v_img] = 0
+                    vigilance_select['timbre'][v_img] += 1
+                if df.at[i, f'Answer.selection_sync{j}'] == 'vigilance':
+                    if v_img not in vigilance_select['sync'].keys():
+                        vigilance_select['sync'][v_img] = 0
+                    vigilance_select['sync'][v_img] += 1
+
             pair = pair.replace('CondAVTransformer_VNet_randshift_2s_', '').replace('_GH_vqgan', '')
             if pair not in ans_timbre.keys():
                 ans_timbre[pair] = []
@@ -44,6 +65,7 @@ if __name__ == "__main__":
             if pair not in ans_sync.keys():
                 ans_sync[pair] = []
             ans_sync[pair].append(df.at[i, f'Answer.selection_sync{j}'])
+    print(vigilance_cnt, vigilance_select, '\n')
 
     timbre_ratio = {}
     timbre_pval = {}
