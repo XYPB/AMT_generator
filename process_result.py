@@ -9,12 +9,15 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('--res_dir', type=str)
 parser.add_argument('--N_practice', type=int, default=5)
-parser.add_argument('--N_imgs', type=int, default=20)
+parser.add_argument('--N_imgs', type=int, default=21)
+parser.add_argument('--remove_fail', action='store_true')
 parser.add_argument('--gt', type=str, default='CondAVTransformer_VNet_randshift_2s_GH_vqgan')
 
 def gather_cav(args):
     df = None
     for filename in os.listdir(args.res_dir):
+        if filename == 'approved.csv':
+            continue
         filename = os.path.join(args.res_dir, filename)
         if '.csv' not in filename: continue
         if df is None:
@@ -33,7 +36,21 @@ if __name__ == "__main__":
     vigilance_cnt = {}
     vigilance_select = {'sync': {}, 'timbre': {}}
     col_names = df.columns.values.tolist()
+    cnt = 0
     for i in range(df.shape[0]):
+        flg = False
+        for j in range(args.N_practice, args.N_imgs):
+            if df.at[i, f'Answer.selection_sync{j}'] == 'vigilance' or df.at[i, f'Answer.selection_timbre{j}'] == 'vigilance':
+                flg = True
+                df.loc[i, 'Reject'] = 'We are so sorry that we cannot approve your submission since it has failed on the sentinel examples we provided during the test.'
+                df.loc[i, 'Approve'] = ''
+                break
+        if flg and args.remove_fail:
+            continue
+        elif args.remove_fail:
+            df.loc[i, 'Approve'] = 'x'
+            df.loc[i, 'Reject'] = ''
+        cnt += 1
         for j in range(args.N_practice, args.N_imgs):
             if df.at[i, f'Input.algo_A{j}'] != args.gt:
                 pair = 'vs_' + df.at[i, f'Input.algo_A{j}']
@@ -58,7 +75,7 @@ if __name__ == "__main__":
                         vigilance_select['sync'][v_img] = 0
                     vigilance_select['sync'][v_img] += 1
 
-            pair = pair.replace('CondAVTransformer_VNet_randshift_2s_', '').replace('_GH_vqgan', '')
+            pair = pair.replace('CondAVTransformer_VNet_randshift_2s_', '').replace('_GH_vqgan', '').replace('_no_earlystop', '')
             if pair not in ans_timbre.keys():
                 ans_timbre[pair] = []
             ans_timbre[pair].append(df.at[i, f'Answer.selection_timbre{j}'])
@@ -66,6 +83,7 @@ if __name__ == "__main__":
                 ans_sync[pair] = []
             ans_sync[pair].append(df.at[i, f'Answer.selection_sync{j}'])
     print(vigilance_cnt, vigilance_select, '\n')
+    print(cnt, '\n')
 
     timbre_ratio = {}
     timbre_pval = {}
@@ -110,6 +128,9 @@ if __name__ == "__main__":
     plt.ylim(0, 1)
     plt.legend()
     plt.savefig(os.path.join(args.res_dir, 'res_sync.png'), dpi=300, bbox_inches='tight', pad_inches=0.2)
+
+    if args.remove_fail:
+        df.to_csv(os.path.join(args.res_dir, 'approved.csv'))
 
 
 
