@@ -52,7 +52,7 @@ def getDefaultOpts():
 	opt['vigilance_path'] = 'vigilance'	   # path to vigilance images
 	opt['gt_path'] = 'CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop'					 # path to gt images
 	opt['Nimgs'] = 582						# number of images to test
-	opt['Npairs'] = 21						# number of paired comparisons per HIT
+	opt['Npairs'] = 36						# number of paired comparisons per HIT
 	opt['Npractice'] = 5					 # number of practice trials per HIT (number of non-practice trials is opt['Npairs']-opt['Npractice'])
 	opt['Nhits'] = 200				 # number of HITs per algorithm
 	opt['vigilance_freq'] = 0.05 		   # percent of trials that are vigilance tests
