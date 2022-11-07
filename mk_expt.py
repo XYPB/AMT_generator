@@ -98,7 +98,7 @@ def mk_expt(expt_name):
 	os.mkdir(opt['expt_name'])
 	
 	# rng('shuffle')
-	csv_fname = os.path.join(opt['expt_name'],'expt_input_data.csv')
+	# csv_fname = os.path.join(opt['expt_name'],'expt_input_data.csv')
 	
 	# make header
 	head_algo_A = []
@@ -195,13 +195,13 @@ def mk_expt(expt_name):
 	csv_out = np.concatenate((np.concatenate((head_algo_A, head_algo_B, head_target, head_condition, head_images_A, head_images_B),axis=1),
 		np.concatenate((algo_A, algo_B, target_video, condition_video, image_A, image_B),axis=1)),axis=0)
 
-	fid = open(csv_fname,'w')
-	for i in range(csv_out.shape[0]):
-		for j in range(csv_out.shape[1]-1):
-			fid.write(csv_out[i,j]+',')
-		fid.write(csv_out[i,-1])
-		fid.write('\n')
-	fid.close()
+	# fid = open(csv_fname,'w')
+	# for i in range(csv_out.shape[0]):
+	# 	for j in range(csv_out.shape[1]-1):
+	# 		fid.write(csv_out[i,j]+',')
+	# 	fid.write(csv_out[i,-1])
+	# 	fid.write('\n')
+	# fid.close()
 	
 	breakcode='[[BR]]'
 
@@ -209,7 +209,7 @@ def mk_expt(expt_name):
 	# embed()
 	html = fileread('index_template.html',breakcode=breakcode)
 	
-	html = html.replace('{{UT_ID}}', opt['ut_id'])
+	# html = html.replace('{{UT_ID}}', opt['ut_id'])
 	html = html.replace('{{BASE_URL}}', opt['base_url'])
 	
 	html = html.replace('{{INSTRUCTIONS}}', fileread(opt['instructions_file'],breakcode=breakcode))
@@ -224,8 +224,8 @@ def mk_expt(expt_name):
 	html = html.replace('{{N_PRACTICE}}', '%i'%(opt['Npractice']))
 	html = html.replace('{{TOTAL_NUM_IMS}}', '%i'%(opt['Npairs']))
 	
-	s = ('').join(['sequence_helper("${algo_A%d}","${algo_B%d}","${target%d}","${condition%d}","${image_A%d}","${image_B%d}");\n'%(i,i,i, i,i,i) for i in range(opt['Npairs'])])
-	html = html.replace('{{SEQUENCE}}', s)
+	# s = ('').join(['sequence_helper("${algo_A%d}","${algo_B%d}","${target%d}","${condition%d}","${image_A%d}","${image_B%d}");\n'%(i,i,i, i,i,i) for i in range(opt['Npairs'])])
+	# html = html.replace('{{SEQUENCE}}', s)
 
 	s = []
 	s = ('').join(['<input type="hidden" name="selection_sync%d" id="selection_sync%d" value="unset">\n<input type="hidden" name="selection_timbre%d" id="selection_timbre%d" value="unset">\n'%(i,i,i,i) for i in range(opt['Npairs'])])

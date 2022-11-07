@@ -88,22 +88,10 @@
 		</style>
 
 
-<script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
-<script type="text/javascript">
-(function(){
-    var ut_id = "75ba230549ba66f94106fbb9b4e8a846";
-    if (UTWorkerLimitReached(ut_id)) {
-        document.getElementById('mturk_form').style.display = 'none';
-        document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
-    }
-})();
-</script>
-
-
 <!-- <script src="http://uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
 <script type="text/javascript">
 (function(){
-    var ut_id = "75ba230549ba66f94106fbb9b4e8a846";
+    var ut_id = "{{UT_ID}}";
     if (UTWorkerLimitReached(ut_id)) {
         document.getElementById('mturk_form').style.display = 'none';
         document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT'.";
@@ -170,6 +158,58 @@ function sequence_helper(algo_A, algo_B, target_video, condition_video, image_A,
 	
 }
 
+function randint(min, max){
+  return Math.floor(Math.random()*(max - min)) + min;
+}
+
+function randArray(len, min, max) {
+  return Array.from({length:len}, v => Math.floor(Math.random()*(max-min))+min);
+}
+
+function randExperiment(Npairs, Npractice) {
+  const algos = ["onset_baseline", "CondAVTransformer_VNet_randshift_2s_style_transfer_GH_vqgan", "Taming_pretrained",
+		"CondAVTransformer_VNet_randshift_2s_dropcond_GH_vqgan_no_earlystop", "CondAVTransformer_VNet_randshift_2s_outside_cond_GH_vqgan_no_earlystop",
+		"CondAVTransformer_VNet_randshift_2s_dropcondvis_GH_vqgan_no_earlystop", "CondAVTransformer_VNet_randshift_2s_no_aug_GH_vqgan_no_earlystop"];
+  const gt_path = "CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop";
+  const Nimgs = 582;
+  const vigilance_idx = 133;
+
+  var vigilance_pos = randint(Npractice, Npairs);
+  var side = randArray(Npairs, 0, 2);
+  var algo_idx = randArray(Npairs, 0, algos.length);
+  var video_idx = randArray(Npairs, 0, Nimgs);
+
+  for(var i = 0; i < Npairs; i++) {
+    if (i == vigilance_pos) {
+      var target = "target/"+vigilance_idx.toString()+ ".mp4";
+      var condition = "vigilance_cond/" + vigilance_idx.toString() + ".mp4";
+      if (side[i] == 0) {
+        var image_A = "vigilance/" + vigilance_idx.toString() + ".mp4";
+        var image_B = "target_sound/" + vigilance_idx.toString() + ".mp4";
+        sequence_helper("vigilance",gt_path,target,condition,image_A,image_B);
+      } else {
+        var image_A = "target_sound/" + vigilance_idx.toString() + ".mp4";
+        var image_B = "vigilance/" + vigilance_idx.toString() + ".mp4";
+        sequence_helper(gt_path,"vigilance",target,condition,image_A,image_B);
+      }
+    } else {
+      var target = "target/"+(video_idx[i] % 194).toString()+ ".mp4";
+      var condition = "condition/" + video_idx[i].toString() + ".mp4";
+      var cur_algo_idx = (algos[algo_idx[i]] == "Taming_pretrained") ? (video_idx[i] % 194).toString() : video_idx[i].toString()
+      if (side[i] == 0) {
+        var image_A = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
+        var image_B = gt_path + "/" +  video_idx[i].toString() + ".mp4";
+        sequence_helper(algos[algo_idx[i]],gt_path,target,condition,image_A,image_B);
+      } else {
+        var image_A = gt_path + "/" +  video_idx[i].toString() + ".mp4";
+        var image_B = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
+        sequence_helper(gt_path,algos[algo_idx[i]],target,condition,image_A,image_B);
+      }
+    }
+  }
+}
+
+
 function makeExperiment() {
   p.is_practice = false;
 	p.im_num = 0;
@@ -187,43 +227,7 @@ function makeExperiment() {
 	p.image_A = [];
 	p.image_B = [];
 
-	sequence_helper("${algo_A0}","${algo_B0}","${target0}","${condition0}","${image_A0}","${image_B0}");
-sequence_helper("${algo_A1}","${algo_B1}","${target1}","${condition1}","${image_A1}","${image_B1}");
-sequence_helper("${algo_A2}","${algo_B2}","${target2}","${condition2}","${image_A2}","${image_B2}");
-sequence_helper("${algo_A3}","${algo_B3}","${target3}","${condition3}","${image_A3}","${image_B3}");
-sequence_helper("${algo_A4}","${algo_B4}","${target4}","${condition4}","${image_A4}","${image_B4}");
-sequence_helper("${algo_A5}","${algo_B5}","${target5}","${condition5}","${image_A5}","${image_B5}");
-sequence_helper("${algo_A6}","${algo_B6}","${target6}","${condition6}","${image_A6}","${image_B6}");
-sequence_helper("${algo_A7}","${algo_B7}","${target7}","${condition7}","${image_A7}","${image_B7}");
-sequence_helper("${algo_A8}","${algo_B8}","${target8}","${condition8}","${image_A8}","${image_B8}");
-sequence_helper("${algo_A9}","${algo_B9}","${target9}","${condition9}","${image_A9}","${image_B9}");
-sequence_helper("${algo_A10}","${algo_B10}","${target10}","${condition10}","${image_A10}","${image_B10}");
-sequence_helper("${algo_A11}","${algo_B11}","${target11}","${condition11}","${image_A11}","${image_B11}");
-sequence_helper("${algo_A12}","${algo_B12}","${target12}","${condition12}","${image_A12}","${image_B12}");
-sequence_helper("${algo_A13}","${algo_B13}","${target13}","${condition13}","${image_A13}","${image_B13}");
-sequence_helper("${algo_A14}","${algo_B14}","${target14}","${condition14}","${image_A14}","${image_B14}");
-sequence_helper("${algo_A15}","${algo_B15}","${target15}","${condition15}","${image_A15}","${image_B15}");
-sequence_helper("${algo_A16}","${algo_B16}","${target16}","${condition16}","${image_A16}","${image_B16}");
-sequence_helper("${algo_A17}","${algo_B17}","${target17}","${condition17}","${image_A17}","${image_B17}");
-sequence_helper("${algo_A18}","${algo_B18}","${target18}","${condition18}","${image_A18}","${image_B18}");
-sequence_helper("${algo_A19}","${algo_B19}","${target19}","${condition19}","${image_A19}","${image_B19}");
-sequence_helper("${algo_A20}","${algo_B20}","${target20}","${condition20}","${image_A20}","${image_B20}");
-sequence_helper("${algo_A21}","${algo_B21}","${target21}","${condition21}","${image_A21}","${image_B21}");
-sequence_helper("${algo_A22}","${algo_B22}","${target22}","${condition22}","${image_A22}","${image_B22}");
-sequence_helper("${algo_A23}","${algo_B23}","${target23}","${condition23}","${image_A23}","${image_B23}");
-sequence_helper("${algo_A24}","${algo_B24}","${target24}","${condition24}","${image_A24}","${image_B24}");
-sequence_helper("${algo_A25}","${algo_B25}","${target25}","${condition25}","${image_A25}","${image_B25}");
-sequence_helper("${algo_A26}","${algo_B26}","${target26}","${condition26}","${image_A26}","${image_B26}");
-sequence_helper("${algo_A27}","${algo_B27}","${target27}","${condition27}","${image_A27}","${image_B27}");
-sequence_helper("${algo_A28}","${algo_B28}","${target28}","${condition28}","${image_A28}","${image_B28}");
-sequence_helper("${algo_A29}","${algo_B29}","${target29}","${condition29}","${image_A29}","${image_B29}");
-sequence_helper("${algo_A30}","${algo_B30}","${target30}","${condition30}","${image_A30}","${image_B30}");
-sequence_helper("${algo_A31}","${algo_B31}","${target31}","${condition31}","${image_A31}","${image_B31}");
-sequence_helper("${algo_A32}","${algo_B32}","${target32}","${condition32}","${image_A32}","${image_B32}");
-sequence_helper("${algo_A33}","${algo_B33}","${target33}","${condition33}","${image_A33}","${image_B33}");
-sequence_helper("${algo_A34}","${algo_B34}","${target34}","${condition34}","${image_A34}","${image_B34}");
-sequence_helper("${algo_A35}","${algo_B35}","${target35}","${condition35}","${image_A35}","${image_B35}");
-
+	randExperiment(p.total_num_ims, p.npractice)
 
   return this;
 }
