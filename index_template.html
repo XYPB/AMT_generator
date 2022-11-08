@@ -135,10 +135,12 @@ function setBodyHeight() {
   $('body').height(wh); // body height = window height
 }
 
-function sequence_helper(algo_A, algo_B, target_video, condition_video, image_A, image_B) {
+function sequence_helper(idx, algo_A, algo_B, target_video, condition_video, image_A, image_B) {
 	var curr_v = null;
 	p.algo_A.push(algo_A);
   p.algo_B.push(algo_B);
+  $("#algo_A" + (idx)).val(algo_A);
+  $("#algo_B" + (idx)).val(algo_B);
 
   curr_v = document.createElement('video');
   curr_v.src = base_url + target_video;
@@ -186,11 +188,11 @@ function randExperiment(Npairs, Npractice) {
       if (side[i] == 0) {
         var image_A = "vigilance/" + vigilance_idx.toString() + ".mp4";
         var image_B = "target_sound/" + vigilance_idx.toString() + ".mp4";
-        sequence_helper("vigilance",gt_path,target,condition,image_A,image_B);
+        sequence_helper(i, "vigilance",gt_path,target,condition,image_A,image_B);
       } else {
         var image_A = "target_sound/" + vigilance_idx.toString() + ".mp4";
         var image_B = "vigilance/" + vigilance_idx.toString() + ".mp4";
-        sequence_helper(gt_path,"vigilance",target,condition,image_A,image_B);
+        sequence_helper(i, gt_path,"vigilance",target,condition,image_A,image_B);
       }
     } else {
       var target = "target/"+(video_idx[i] % 194).toString()+ ".mp4";
@@ -199,11 +201,11 @@ function randExperiment(Npairs, Npractice) {
       if (side[i] == 0) {
         var image_A = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
         var image_B = gt_path + "/" +  video_idx[i].toString() + ".mp4";
-        sequence_helper(algos[algo_idx[i]],gt_path,target,condition,image_A,image_B);
+        sequence_helper(i, algos[algo_idx[i]],gt_path,target,condition,image_A,image_B);
       } else {
         var image_A = gt_path + "/" +  video_idx[i].toString() + ".mp4";
         var image_B = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
-        sequence_helper(gt_path,algos[algo_idx[i]],target,condition,image_A,image_B);
+        sequence_helper(i, gt_path,algos[algo_idx[i]],target,condition,image_A,image_B);
       }
     }
   }
@@ -519,6 +521,8 @@ $(document).ready(init);
 
 </div>
 
+
+{{INPUT}}
 {{SELECTION}}
 
 

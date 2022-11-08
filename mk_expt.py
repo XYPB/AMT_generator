@@ -230,6 +230,10 @@ def mk_expt(expt_name):
 	s = []
 	s = ('').join(['<input type="hidden" name="selection_sync%d" id="selection_sync%d" value="unset">\n<input type="hidden" name="selection_timbre%d" id="selection_timbre%d" value="unset">\n'%(i,i,i,i) for i in range(opt['Npairs'])])
 	html = html.replace('{{SELECTION}}', s)
+
+	s = []
+	s = ('').join(['<input type="hidden" name="algo_A%d" id="algo_A%d" value="unset">\n<input type="hidden" name="algo_B%d" id="algo_B%d" value="unset">\n'%(i,i,i,i) for i in range(opt['Npairs'])])
+	html = html.replace('{{INPUT}}', s)
 	
 	fid = open(os.path.join(opt['expt_name'],'index.html'),'w')
 	fid.writelines(html.split(breakcode))

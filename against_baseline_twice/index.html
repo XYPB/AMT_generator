@@ -135,10 +135,12 @@ function setBodyHeight() {
   $('body').height(wh); // body height = window height
 }
 
-function sequence_helper(algo_A, algo_B, target_video, condition_video, image_A, image_B) {
+function sequence_helper(idx, algo_A, algo_B, target_video, condition_video, image_A, image_B) {
 	var curr_v = null;
 	p.algo_A.push(algo_A);
   p.algo_B.push(algo_B);
+  $("#algo_A" + (idx)).val(algo_A);
+  $("#algo_B" + (idx)).val(algo_B);
 
   curr_v = document.createElement('video');
   curr_v.src = base_url + target_video;
@@ -186,11 +188,11 @@ function randExperiment(Npairs, Npractice) {
       if (side[i] == 0) {
         var image_A = "vigilance/" + vigilance_idx.toString() + ".mp4";
         var image_B = "target_sound/" + vigilance_idx.toString() + ".mp4";
-        sequence_helper("vigilance",gt_path,target,condition,image_A,image_B);
+        sequence_helper(i, "vigilance",gt_path,target,condition,image_A,image_B);
       } else {
         var image_A = "target_sound/" + vigilance_idx.toString() + ".mp4";
         var image_B = "vigilance/" + vigilance_idx.toString() + ".mp4";
-        sequence_helper(gt_path,"vigilance",target,condition,image_A,image_B);
+        sequence_helper(i, gt_path,"vigilance",target,condition,image_A,image_B);
       }
     } else {
       var target = "target/"+(video_idx[i] % 194).toString()+ ".mp4";
@@ -199,11 +201,11 @@ function randExperiment(Npairs, Npractice) {
       if (side[i] == 0) {
         var image_A = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
         var image_B = gt_path + "/" +  video_idx[i].toString() + ".mp4";
-        sequence_helper(algos[algo_idx[i]],gt_path,target,condition,image_A,image_B);
+        sequence_helper(i, algos[algo_idx[i]],gt_path,target,condition,image_A,image_B);
       } else {
         var image_A = gt_path + "/" +  video_idx[i].toString() + ".mp4";
         var image_B = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
-        sequence_helper(gt_path,algos[algo_idx[i]],target,condition,image_A,image_B);
+        sequence_helper(i, gt_path,algos[algo_idx[i]],target,condition,image_A,image_B);
       }
     }
   }
@@ -535,6 +537,80 @@ $(document).ready(init);
   <br>
 
 </div>
+
+
+<input type="hidden" name="algo_A0" id="algo_A0" value="unset">
+<input type="hidden" name="algo_B0" id="algo_B0" value="unset">
+<input type="hidden" name="algo_A1" id="algo_A1" value="unset">
+<input type="hidden" name="algo_B1" id="algo_B1" value="unset">
+<input type="hidden" name="algo_A2" id="algo_A2" value="unset">
+<input type="hidden" name="algo_B2" id="algo_B2" value="unset">
+<input type="hidden" name="algo_A3" id="algo_A3" value="unset">
+<input type="hidden" name="algo_B3" id="algo_B3" value="unset">
+<input type="hidden" name="algo_A4" id="algo_A4" value="unset">
+<input type="hidden" name="algo_B4" id="algo_B4" value="unset">
+<input type="hidden" name="algo_A5" id="algo_A5" value="unset">
+<input type="hidden" name="algo_B5" id="algo_B5" value="unset">
+<input type="hidden" name="algo_A6" id="algo_A6" value="unset">
+<input type="hidden" name="algo_B6" id="algo_B6" value="unset">
+<input type="hidden" name="algo_A7" id="algo_A7" value="unset">
+<input type="hidden" name="algo_B7" id="algo_B7" value="unset">
+<input type="hidden" name="algo_A8" id="algo_A8" value="unset">
+<input type="hidden" name="algo_B8" id="algo_B8" value="unset">
+<input type="hidden" name="algo_A9" id="algo_A9" value="unset">
+<input type="hidden" name="algo_B9" id="algo_B9" value="unset">
+<input type="hidden" name="algo_A10" id="algo_A10" value="unset">
+<input type="hidden" name="algo_B10" id="algo_B10" value="unset">
+<input type="hidden" name="algo_A11" id="algo_A11" value="unset">
+<input type="hidden" name="algo_B11" id="algo_B11" value="unset">
+<input type="hidden" name="algo_A12" id="algo_A12" value="unset">
+<input type="hidden" name="algo_B12" id="algo_B12" value="unset">
+<input type="hidden" name="algo_A13" id="algo_A13" value="unset">
+<input type="hidden" name="algo_B13" id="algo_B13" value="unset">
+<input type="hidden" name="algo_A14" id="algo_A14" value="unset">
+<input type="hidden" name="algo_B14" id="algo_B14" value="unset">
+<input type="hidden" name="algo_A15" id="algo_A15" value="unset">
+<input type="hidden" name="algo_B15" id="algo_B15" value="unset">
+<input type="hidden" name="algo_A16" id="algo_A16" value="unset">
+<input type="hidden" name="algo_B16" id="algo_B16" value="unset">
+<input type="hidden" name="algo_A17" id="algo_A17" value="unset">
+<input type="hidden" name="algo_B17" id="algo_B17" value="unset">
+<input type="hidden" name="algo_A18" id="algo_A18" value="unset">
+<input type="hidden" name="algo_B18" id="algo_B18" value="unset">
+<input type="hidden" name="algo_A19" id="algo_A19" value="unset">
+<input type="hidden" name="algo_B19" id="algo_B19" value="unset">
+<input type="hidden" name="algo_A20" id="algo_A20" value="unset">
+<input type="hidden" name="algo_B20" id="algo_B20" value="unset">
+<input type="hidden" name="algo_A21" id="algo_A21" value="unset">
+<input type="hidden" name="algo_B21" id="algo_B21" value="unset">
+<input type="hidden" name="algo_A22" id="algo_A22" value="unset">
+<input type="hidden" name="algo_B22" id="algo_B22" value="unset">
+<input type="hidden" name="algo_A23" id="algo_A23" value="unset">
+<input type="hidden" name="algo_B23" id="algo_B23" value="unset">
+<input type="hidden" name="algo_A24" id="algo_A24" value="unset">
+<input type="hidden" name="algo_B24" id="algo_B24" value="unset">
+<input type="hidden" name="algo_A25" id="algo_A25" value="unset">
+<input type="hidden" name="algo_B25" id="algo_B25" value="unset">
+<input type="hidden" name="algo_A26" id="algo_A26" value="unset">
+<input type="hidden" name="algo_B26" id="algo_B26" value="unset">
+<input type="hidden" name="algo_A27" id="algo_A27" value="unset">
+<input type="hidden" name="algo_B27" id="algo_B27" value="unset">
+<input type="hidden" name="algo_A28" id="algo_A28" value="unset">
+<input type="hidden" name="algo_B28" id="algo_B28" value="unset">
+<input type="hidden" name="algo_A29" id="algo_A29" value="unset">
+<input type="hidden" name="algo_B29" id="algo_B29" value="unset">
+<input type="hidden" name="algo_A30" id="algo_A30" value="unset">
+<input type="hidden" name="algo_B30" id="algo_B30" value="unset">
+<input type="hidden" name="algo_A31" id="algo_A31" value="unset">
+<input type="hidden" name="algo_B31" id="algo_B31" value="unset">
+<input type="hidden" name="algo_A32" id="algo_A32" value="unset">
+<input type="hidden" name="algo_B32" id="algo_B32" value="unset">
+<input type="hidden" name="algo_A33" id="algo_A33" value="unset">
+<input type="hidden" name="algo_B33" id="algo_B33" value="unset">
+<input type="hidden" name="algo_A34" id="algo_A34" value="unset">
+<input type="hidden" name="algo_B34" id="algo_B34" value="unset">
+<input type="hidden" name="algo_A35" id="algo_A35" value="unset">
+<input type="hidden" name="algo_B35" id="algo_B35" value="unset">
 
 <input type="hidden" name="selection_sync0" id="selection_sync0" value="unset">
 <input type="hidden" name="selection_timbre0" id="selection_timbre0" value="unset">
