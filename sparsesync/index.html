@@ -1,0 +1,691 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css" rel="stylesheet" />
+		
+		<script src="https://s3.amazonaws.com/MTurks/jquery-1.11.2.min.js"></script>
+		<script src="https://s3.amazonaws.com/MTurks/jquery-ui.min.js"></script>
+		<script src="https://s3.amazonaws.com/MTurks/image-picker.min.js"></script>
+		
+				
+		<style>
+			body {
+				margin: 0px 50px;
+				font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+				font-size: 14pt;
+			}
+			
+			#content_div {
+				margin: auto;
+				width: 900px;
+			}
+			
+			h3 {
+			}
+			
+			#long_info {
+			}
+			
+			#couhes {
+				color: #777;
+				font-style: italic;
+				margin: 20px 0px;
+				font-size: 12pt;
+			}
+			
+			#start_button, #continue_button {
+				width:300px;
+				height:80px;
+				font-size:30px;
+				border: 2px solid #AAA;
+				border-radius: 25px;
+				background-color: #EEE;
+			}
+			#start_button:hover {
+				border: 2px solid #999;
+				background-color: #CCC;
+			}
+			
+			button, #submit_button {
+				width:200px;
+				height:50px;
+				font-size:24px;
+				border: 1px solid #CCC;
+				border-radius: 10px;
+				background-color: #EEE;
+			}
+			button:hover {
+				border: 1px solid #AAA;
+				background-color: #CCC;
+			}
+			
+			#images_div {
+				margin: 100px 0px 40px 0px;
+			}
+			
+			#trial_num {
+				margin: 20px 0px 0px 0px;
+				font-size:16px;
+				color:#777;
+				font-style:italic;
+			}
+			
+			#feedback {
+			}
+			
+			#experiment_start {
+				font-size: 20px;
+			}
+			
+			table.demo_imgs {
+				text-align: center;
+				font-size: 12pt;
+				margin-top: 20px;
+			}
+			table.demo_imgs td {
+				padding: 2px 10px 0px 10px;
+			}
+		</style>
+
+
+<!-- <script src="http://uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function(){
+    var ut_id = "{{UT_ID}}";
+    if (UTWorkerLimitReached(ut_id)) {
+        document.getElementById('mturk_form').style.display = 'none';
+        document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT'.";
+    }
+})();
+</script> -->
+
+<script type="text/javascript">
+
+// from http://stackoverflow.com/questions/15589764/how-to-hide-the-link-to-an-external-web-page-in-a-hit-before-workers-accept-the		
+$.extend({
+  getUrlVars: function(){
+    // From http://code.google.com/p/js-uri/source/browse/trunk/lib/URI.js
+    var parser = /^(?:([^:\/?\#]+):)?(?:\/\/([^\/?\#]*))?([^?\#]*)(?:\?([^\#]*))?(?:\#(.*))?/;
+    var result = window.location.href.match(parser);
+    var scheme    = result[1] || null;
+    var authority = result[2] || null;
+    var path      = result[3] || null;
+    var query     = result[4] || null;
+    var fragment  = result[5] || null
+    if (query === null || query === undefined) {
+      return {};
+    }
+    var vars = [], hash;
+    var hashes = query.split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+      hash = hashes[i].split('=');
+      vars.push(hash[0]);
+      vars[hash[0]] = hash[1];
+    }
+    return vars;
+  },
+  getUrlVar: function(name){
+    return $.getUrlVars()[name];
+  }
+});
+
+function setBodyHeight() {
+  var wh = $(window).height();
+  $('body').height(wh); // body height = window height
+}
+
+function sequence_helper(idx, algo_A, algo_B, target_video, condition_video, image_A, image_B) {
+	var curr_v = null;
+	p.algo_A.push(algo_A);
+  p.algo_B.push(algo_B);
+  $("#algo_A" + (idx)).val(algo_A);
+  $("#algo_B" + (idx)).val(algo_B);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + target_video;
+	p.target_video.push(curr_v);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + condition_video;
+	p.condition_video.push(curr_v);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + image_A;
+	p.image_A.push(curr_v);
+
+  curr_v = document.createElement('video');
+  curr_v.src = base_url + image_B;
+	p.image_B.push(curr_v);
+	
+}
+
+function randint(min, max){
+  return Math.floor(Math.random()*(max - min)) + min;
+}
+
+function randArray(len, min, max) {
+  return Array.from({length:len}, v => Math.floor(Math.random()*(max-min))+min);
+}
+
+function randExperiment(Npairs, Npractice) {
+  const algos = ["CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop_multiple"];
+  const gt_path = "CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop";
+  const Nimgs = 582;
+  const vigilance_idx = 133;
+
+  var vigilance_pos = randint(Npractice, Npairs);
+  var side = randArray(Npairs, 0, 2);
+  var algo_idx = randArray(Npairs, 0, algos.length);
+  var video_idx = randArray(Npairs, 0, Nimgs);
+
+  for(var i = 0; i < Npairs; i++) {
+    if (i == vigilance_pos) {
+      var target = "target/"+vigilance_idx.toString()+ ".mp4";
+      var condition = "vigilance_cond/" + vigilance_idx.toString() + ".mp4";
+      if (side[i] == 0) {
+        var image_A = "vigilance/" + vigilance_idx.toString() + ".mp4";
+        var image_B = "target_sound/" + vigilance_idx.toString() + ".mp4";
+        sequence_helper(i, "vigilance",gt_path,target,condition,image_A,image_B);
+      } else {
+        var image_A = "target_sound/" + vigilance_idx.toString() + ".mp4";
+        var image_B = "vigilance/" + vigilance_idx.toString() + ".mp4";
+        sequence_helper(i, gt_path,"vigilance",target,condition,image_A,image_B);
+      }
+    } else {
+      var target = "target/"+(video_idx[i] % 194).toString()+ ".mp4";
+      var condition = "condition/" + video_idx[i].toString() + ".mp4";
+      var cur_algo_idx = (algos[algo_idx[i]] == "Taming_pretrained") ? (video_idx[i] % 194).toString() : video_idx[i].toString()
+      if (side[i] == 0) {
+        var image_A = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
+        var image_B = gt_path + "/" +  video_idx[i].toString() + ".mp4";
+        sequence_helper(i, algos[algo_idx[i]],gt_path,target,condition,image_A,image_B);
+      } else {
+        var image_A = gt_path + "/" +  video_idx[i].toString() + ".mp4";
+        var image_B = algos[algo_idx[i]] + "/" + cur_algo_idx + ".mp4";
+        sequence_helper(i, gt_path,algos[algo_idx[i]],target,condition,image_A,image_B);
+      }
+    }
+  }
+}
+
+
+function makeExperiment() {
+  p.is_practice = false;
+	p.im_num = 0;
+  p.initialized = false;
+  p.is_assigned = ($.getUrlVar('assignmentId') != 'ASSIGNMENT_ID_NOT_AVAILABLE');
+  p.practice_intro_shown = false;
+  p.experiment_intro_shown = false;
+	p.npractice = 5;
+	p.total_num_ims = 36;
+	
+	p.algo_A = [];
+  p.algo_B = [];
+  p.target_video = [];
+  p.condition_video = [];
+	p.image_A = [];
+	p.image_B = [];
+
+	randExperiment(p.total_num_ims, p.npractice)
+
+  return this;
+}
+
+
+var p = {};
+var base_url = 'https://github.com/XYPB/AMT_test_data/raw/master/';
+var first_trial = true;
+var num_correct = 0;
+
+function assert(x, msg) { if (!x) { throw("Assertion failed: " + msg); } }
+
+function now() { return (new Date()).getTime() / 1000.; }
+
+function end() {
+  $('#short_instructions').hide();
+  $('#done').show();
+	$("#submitButton").show();
+}
+
+function showFixation() {
+    document.im.src = p.fixation_im.src;
+}
+function showBlank() {
+    document.im.src = "images/start_image.png";
+}
+
+function continue_to_main_expt() {
+	$('#experiment_start').hide();
+	next();
+}
+
+function next() {
+	$('#imageA').css('border','0px solid black');
+	$('#imageB').css('border','0px solid black');
+	
+  if (p.is_practice && (p.im_num == p.npractice)) {
+
+    p.is_practice = false;
+  
+    // $('#target').hide();
+    $('#conditional').hide();
+    $('#imageA').hide();
+    $('#imageB').hide();
+    // $('#target_div').hide();
+    $('#conditional_div').hide();
+    $('#imageA_div').hide();
+    $('#imageB_div').hide();
+    $('#short_instructions').html("");
+
+    $('#experiment_start').show();
+
+    return;
+  }
+  else if (p.im_num == p.total_num_ims) {
+		
+		end();
+		
+		return;
+	}
+	
+	var display_time = 1000;
+	var fade_time = 200;
+	var isi = 300;
+	
+	var offset_time = 0;
+	
+  // $('#target').hide();
+	$('#conditional').hide();
+	$('#imageA').hide();
+	$('#imageB').hide();
+	$('#short_instructions').html("");
+	$('#short_instructions').show();
+	// $('#target_div').show();
+	$('#conditional_div').show();
+  $('#imageA_div').show();
+	$('#imageB_div').show();
+	
+	if (p.is_practice) {
+		$('#trial_num').html("<br><center>Practice trial " + (p.im_num+1) + " out of " + p.npractice + "</center>");
+	}
+	else {
+		$('#trial_num').html("<br><center>Trial " + (p.im_num+1-p.npractice) + " out of " + (p.total_num_ims-p.npractice) + "</center>");
+	}
+
+  // var target_video = document.getElementById('target');
+	// target_video.src = p.target_video[p.im_num].src;
+  
+  if (first_trial) {
+    offset_time += isi;
+		first_trial = false;
+	}
+  // $('#target').show();
+
+  var condition_video = document.getElementById('conditional');
+	condition_video.src = p.condition_video[p.im_num].src;
+	$('#conditional').show();
+
+	var imageA = document.getElementById('imageA');
+	imageA.src = p.image_A[p.im_num].src;
+	$('#imageA').show();
+	
+	var imageB = document.getElementById('imageB');
+	imageB.src = p.image_B[p.im_num].src;
+	$('#imageB').show();
+	
+	fade_time = 50;
+	setTimeout(function() { 
+		$('#trial_num').show(); 
+		$('#short_instructions').html("Please answer the following two questions based on the videos provided. Please make sure that your headphone's sound is on. ");
+		$('#selection_div').fadeIn(fade_time);
+	}, offset_time+100);
+}
+
+
+function submitAnswer() {
+
+  if ((!document.getElementById('video_A_button_sync').checked && !document.getElementById('video_B_button_sync').checked) 
+      || (!document.getElementById('video_A_button_timbre').checked && !document.getElementById('video_B_button_timbre').checked)) {
+        alert("You need to provide an answer for all the questions!");
+        return;
+      }
+
+	if (document.getElementById('video_A_button_sync').checked) {
+    $("#selection_sync" + (p.im_num)).val(p.algo_A[p.im_num]);
+    document.getElementById('video_A_button_sync').checked = false;
+  } else if (document.getElementById('video_B_button_sync').checked) {
+    $("#selection_sync" + (p.im_num)).val(p.algo_B[p.im_num]);
+    document.getElementById('video_B_button_sync').checked = false;
+  }
+  if (document.getElementById('video_A_button_timbre').checked) {
+    $("#selection_timbre" + (p.im_num)).val(p.algo_A[p.im_num]);
+    document.getElementById('video_A_button_timbre').checked = false;
+  } else if (document.getElementById('video_B_button_timbre').checked) {
+    $("#selection_timbre" + (p.im_num)).val(p.algo_B[p.im_num]);
+    document.getElementById('video_B_button_timbre').checked = false;
+  }
+
+  $('#selection_div').hide();
+	$('#trial_num').hide();
+  // $('#target').hide();
+	$('#conditional').hide();
+  $('#imageA').hide();
+  $('#imageB').hide();
+  // $('#target_div').hide();
+	$('#conditional_div').hide();
+  $('#imageA_div').hide();
+  $('#imageB_div').hide();
+  
+
+  p.im_num = p.im_num+1;
+  next();
+}
+
+function startExperiment() {
+
+  if (p == null) {
+    return;
+  }
+  
+  p.is_practice = true;
+
+  $('#buttons_start').hide();
+  $('#long_info').hide();
+  $('#couhes').hide();
+  $('#teaser').hide();
+
+  $('#images_div').show();
+
+  next();
+}
+
+
+function init() {
+	
+	$(window).bind('resize', function() { setBodyHeight(); });
+	
+	makeExperiment();
+	
+	// $('#target').hide();
+	$('#conditional').hide();
+  $('#imageA').hide();
+  $('#imageB').hide();
+  // $('#target_div').hide();
+	$('#conditional_div').hide();
+  $('#imageA_div').hide();
+  $('#imageB_div').hide();
+  $('#selection_div').hide();
+	
+	$("#submitButton").hide();
+	
+	if (p.is_assigned) {
+		$('#start_button').removeAttr('disabled');
+		$('#start_button').html('Start!');
+	}
+}
+
+$(document).ready(init);
+
+</script>
+
+</head>
+
+
+<body>
+<div id = "content_div">
+<div id="images_div" style = "display:none" width = "100%" align = "center">
+  <div id="short_instructions" style="display:none;"></div> <div><br><br></div>
+
+  <!-- <div id="target_div" style="height:202px; width:402px; display:inline-block; border:0px solid black;">
+    <video id='target' style="display:block;" controls height="200px">Your browser does not support MPEG4 video format.</video><label for="target">Video #1(silent)</label>
+  </div> -->
+
+  <div id="conditional_div" style="height:202px; width:402px; display:inline-block; border:0px solid black;">
+    <video id='conditional' style="display:block;" controls height="200px">Your browser does not support MPEG4 video format.</video><label for="conditional">Video #1</label>
+  </div>
+
+  <hr>
+
+  <div id="imageA_div" style="height:202px; width:402px; display:inline-block; border:0px solid black;">
+    <video id='imageA' style="display:block;" controls height="200px">Your browser does not support MPEG4 video format.</video><label for="imageA">Video #2(generated)</label>
+  </div>
+
+  <div id="imageB_div" style="height:202px; width:402px; display:inline-block; border:0px solid black;">
+    <video id='imageB' style="display:block;" controls height="200px">Your browser does not support MPEG4 video format.</video><label for='imageB'>Video #3(generated)</label>
+  </div>
+  <hr>
+  <div id="selection_div">
+    <div id="sync" style="position:relative; width:100%;">
+      <p>In which output Video (#2 or #3) is the audio most <b>synchronized with the action</b> in the video?</p>
+      <input type="radio" id="video_A_button_sync" name="sync" value="Video A"><label for="video_A_button">Video #2</label>
+      <input type="radio" id="video_B_button_sync" name="sync" value="Video B"><label for="video_B_button">Video #3</label>
+    </div>
+    <div id="timbre" style="position:relative; width:100%;">
+      <p>In which output Video (#2 or #3) does the audio sound most like the <b>object or material in Video #1</b> according to the action in the output Video?</p>
+      <input type="radio" id="video_A_button_timbre" name="timbre" value="Video A"><label for="video_A_button">Video #2</label>
+      <input type="radio" id="video_B_button_timbre" name="timbre" value="Video B"><label for="video_B_button">Video #3</label>
+    </div>
+    <button type="button" onclick="submitAnswer()" style="position:relative; width:40%;">Submit</button>
+  </div>
+
+</div>
+
+  <div id = "experiment_start" style="width: 800px; margin: 0 auto; text-align: left; display:none">
+    <br>You've completed the practice exercise!  Click "Continue" to continue on to the main task. The main task will be identical.</br>
+  <div id = "buttons_continue" align=center>
+    <button id="continue_button" type="button" onClick="continue_to_main_expt()">Continue!</button>
+  </div>
+  </div>
+
+<div id="trial_num" style="display:none"></div>
+  
+  <div id="short_info" align="center" style="width: 80%; margin: 0 auto; text-align: left; display:none" align = center>
+  </div>
+
+  <br>
+  <br>
+  
+  
+  <div id="long_info" style = "width:100%">
+      <b>About this HIT:</b><br><br>
+<ul>
+    <li><b>Please use headphones for the test. You may hear some harsh or dissonant sounds, so please make sure to adjust your device's volume before the test.</b></li><br>
+    
+    <li>The task should take approximately 30 minutes to complete.</li><br>
+    
+    <li>You will take part in an experiment involving visual and hearing perception. To complete this task, you will need to watch and listen to 46 groups of videos and answer two questions for each group. Each group consists of the following videos (all videos have audio):<ul>
+        <li>One input video: Video #1</li>
+        <li>Two output videos: Video #2 and Video #3</li>
+    </ul></li><br>
+
+    <li>Your task is to answer the two questions at the bottom:<ul>
+        <li>In which output Video (#2 or #3) is the audio most <b>synchronized with the action</b> in the video?</li>
+        <li>In which output Video (#2 or #3) does the audio sound most like the <b>object or material in Video #1</b> according to the action in the output Video?</li>
+    </ul></li>
+    
+    <li>You will complete a short practice of 5 groups of videos (about 3 minute long) before starting the main task, so that you can get familiar with the interface.</li>
+</ul>
+  </div>
+
+  
+  <div id = "buttons_start" align=center>
+      <br>
+      <button id="start_button" type="button" onClick="startExperiment()" disabled=true><span style='font-size:16pt'>Please accept HIT to start</span></button>
+  
+      <div id = "not_assigned" align=left style = "display:none"">
+        <p>Please accept the HIT to begin!</p>
+      </div>
+  </div>
+
+  <div id="done" align = "center" style = "display:none"> 
+      Thank you! You have completed the experiment.<br><br><div id="score"></div> 
+  <div><textarea id="comments" name="comments" rows="3" cols="31">Comments?</textarea></div><br><br>
+  Please click the submit button below to finish.
+  </div>
+
+  <div id="couhes">
+    <br>
+    <span id="informed_consent_text">By making judgments about these videos, you are participating in a study being performed by scientists at the University of Michigan. If you have questions about this research, please contact Yuexi Du at duyxxd@umich.edu. Your participation in this research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</span>
+  </div>
+
+  <br>
+  <br>
+  <br>
+  <br>
+
+</div>
+
+
+<input type="hidden" name="algo_A0" id="algo_A0" value="unset">
+<input type="hidden" name="algo_B0" id="algo_B0" value="unset">
+<input type="hidden" name="algo_A1" id="algo_A1" value="unset">
+<input type="hidden" name="algo_B1" id="algo_B1" value="unset">
+<input type="hidden" name="algo_A2" id="algo_A2" value="unset">
+<input type="hidden" name="algo_B2" id="algo_B2" value="unset">
+<input type="hidden" name="algo_A3" id="algo_A3" value="unset">
+<input type="hidden" name="algo_B3" id="algo_B3" value="unset">
+<input type="hidden" name="algo_A4" id="algo_A4" value="unset">
+<input type="hidden" name="algo_B4" id="algo_B4" value="unset">
+<input type="hidden" name="algo_A5" id="algo_A5" value="unset">
+<input type="hidden" name="algo_B5" id="algo_B5" value="unset">
+<input type="hidden" name="algo_A6" id="algo_A6" value="unset">
+<input type="hidden" name="algo_B6" id="algo_B6" value="unset">
+<input type="hidden" name="algo_A7" id="algo_A7" value="unset">
+<input type="hidden" name="algo_B7" id="algo_B7" value="unset">
+<input type="hidden" name="algo_A8" id="algo_A8" value="unset">
+<input type="hidden" name="algo_B8" id="algo_B8" value="unset">
+<input type="hidden" name="algo_A9" id="algo_A9" value="unset">
+<input type="hidden" name="algo_B9" id="algo_B9" value="unset">
+<input type="hidden" name="algo_A10" id="algo_A10" value="unset">
+<input type="hidden" name="algo_B10" id="algo_B10" value="unset">
+<input type="hidden" name="algo_A11" id="algo_A11" value="unset">
+<input type="hidden" name="algo_B11" id="algo_B11" value="unset">
+<input type="hidden" name="algo_A12" id="algo_A12" value="unset">
+<input type="hidden" name="algo_B12" id="algo_B12" value="unset">
+<input type="hidden" name="algo_A13" id="algo_A13" value="unset">
+<input type="hidden" name="algo_B13" id="algo_B13" value="unset">
+<input type="hidden" name="algo_A14" id="algo_A14" value="unset">
+<input type="hidden" name="algo_B14" id="algo_B14" value="unset">
+<input type="hidden" name="algo_A15" id="algo_A15" value="unset">
+<input type="hidden" name="algo_B15" id="algo_B15" value="unset">
+<input type="hidden" name="algo_A16" id="algo_A16" value="unset">
+<input type="hidden" name="algo_B16" id="algo_B16" value="unset">
+<input type="hidden" name="algo_A17" id="algo_A17" value="unset">
+<input type="hidden" name="algo_B17" id="algo_B17" value="unset">
+<input type="hidden" name="algo_A18" id="algo_A18" value="unset">
+<input type="hidden" name="algo_B18" id="algo_B18" value="unset">
+<input type="hidden" name="algo_A19" id="algo_A19" value="unset">
+<input type="hidden" name="algo_B19" id="algo_B19" value="unset">
+<input type="hidden" name="algo_A20" id="algo_A20" value="unset">
+<input type="hidden" name="algo_B20" id="algo_B20" value="unset">
+<input type="hidden" name="algo_A21" id="algo_A21" value="unset">
+<input type="hidden" name="algo_B21" id="algo_B21" value="unset">
+<input type="hidden" name="algo_A22" id="algo_A22" value="unset">
+<input type="hidden" name="algo_B22" id="algo_B22" value="unset">
+<input type="hidden" name="algo_A23" id="algo_A23" value="unset">
+<input type="hidden" name="algo_B23" id="algo_B23" value="unset">
+<input type="hidden" name="algo_A24" id="algo_A24" value="unset">
+<input type="hidden" name="algo_B24" id="algo_B24" value="unset">
+<input type="hidden" name="algo_A25" id="algo_A25" value="unset">
+<input type="hidden" name="algo_B25" id="algo_B25" value="unset">
+<input type="hidden" name="algo_A26" id="algo_A26" value="unset">
+<input type="hidden" name="algo_B26" id="algo_B26" value="unset">
+<input type="hidden" name="algo_A27" id="algo_A27" value="unset">
+<input type="hidden" name="algo_B27" id="algo_B27" value="unset">
+<input type="hidden" name="algo_A28" id="algo_A28" value="unset">
+<input type="hidden" name="algo_B28" id="algo_B28" value="unset">
+<input type="hidden" name="algo_A29" id="algo_A29" value="unset">
+<input type="hidden" name="algo_B29" id="algo_B29" value="unset">
+<input type="hidden" name="algo_A30" id="algo_A30" value="unset">
+<input type="hidden" name="algo_B30" id="algo_B30" value="unset">
+<input type="hidden" name="algo_A31" id="algo_A31" value="unset">
+<input type="hidden" name="algo_B31" id="algo_B31" value="unset">
+<input type="hidden" name="algo_A32" id="algo_A32" value="unset">
+<input type="hidden" name="algo_B32" id="algo_B32" value="unset">
+<input type="hidden" name="algo_A33" id="algo_A33" value="unset">
+<input type="hidden" name="algo_B33" id="algo_B33" value="unset">
+<input type="hidden" name="algo_A34" id="algo_A34" value="unset">
+<input type="hidden" name="algo_B34" id="algo_B34" value="unset">
+<input type="hidden" name="algo_A35" id="algo_A35" value="unset">
+<input type="hidden" name="algo_B35" id="algo_B35" value="unset">
+
+<input type="hidden" name="selection_sync0" id="selection_sync0" value="unset">
+<input type="hidden" name="selection_timbre0" id="selection_timbre0" value="unset">
+<input type="hidden" name="selection_sync1" id="selection_sync1" value="unset">
+<input type="hidden" name="selection_timbre1" id="selection_timbre1" value="unset">
+<input type="hidden" name="selection_sync2" id="selection_sync2" value="unset">
+<input type="hidden" name="selection_timbre2" id="selection_timbre2" value="unset">
+<input type="hidden" name="selection_sync3" id="selection_sync3" value="unset">
+<input type="hidden" name="selection_timbre3" id="selection_timbre3" value="unset">
+<input type="hidden" name="selection_sync4" id="selection_sync4" value="unset">
+<input type="hidden" name="selection_timbre4" id="selection_timbre4" value="unset">
+<input type="hidden" name="selection_sync5" id="selection_sync5" value="unset">
+<input type="hidden" name="selection_timbre5" id="selection_timbre5" value="unset">
+<input type="hidden" name="selection_sync6" id="selection_sync6" value="unset">
+<input type="hidden" name="selection_timbre6" id="selection_timbre6" value="unset">
+<input type="hidden" name="selection_sync7" id="selection_sync7" value="unset">
+<input type="hidden" name="selection_timbre7" id="selection_timbre7" value="unset">
+<input type="hidden" name="selection_sync8" id="selection_sync8" value="unset">
+<input type="hidden" name="selection_timbre8" id="selection_timbre8" value="unset">
+<input type="hidden" name="selection_sync9" id="selection_sync9" value="unset">
+<input type="hidden" name="selection_timbre9" id="selection_timbre9" value="unset">
+<input type="hidden" name="selection_sync10" id="selection_sync10" value="unset">
+<input type="hidden" name="selection_timbre10" id="selection_timbre10" value="unset">
+<input type="hidden" name="selection_sync11" id="selection_sync11" value="unset">
+<input type="hidden" name="selection_timbre11" id="selection_timbre11" value="unset">
+<input type="hidden" name="selection_sync12" id="selection_sync12" value="unset">
+<input type="hidden" name="selection_timbre12" id="selection_timbre12" value="unset">
+<input type="hidden" name="selection_sync13" id="selection_sync13" value="unset">
+<input type="hidden" name="selection_timbre13" id="selection_timbre13" value="unset">
+<input type="hidden" name="selection_sync14" id="selection_sync14" value="unset">
+<input type="hidden" name="selection_timbre14" id="selection_timbre14" value="unset">
+<input type="hidden" name="selection_sync15" id="selection_sync15" value="unset">
+<input type="hidden" name="selection_timbre15" id="selection_timbre15" value="unset">
+<input type="hidden" name="selection_sync16" id="selection_sync16" value="unset">
+<input type="hidden" name="selection_timbre16" id="selection_timbre16" value="unset">
+<input type="hidden" name="selection_sync17" id="selection_sync17" value="unset">
+<input type="hidden" name="selection_timbre17" id="selection_timbre17" value="unset">
+<input type="hidden" name="selection_sync18" id="selection_sync18" value="unset">
+<input type="hidden" name="selection_timbre18" id="selection_timbre18" value="unset">
+<input type="hidden" name="selection_sync19" id="selection_sync19" value="unset">
+<input type="hidden" name="selection_timbre19" id="selection_timbre19" value="unset">
+<input type="hidden" name="selection_sync20" id="selection_sync20" value="unset">
+<input type="hidden" name="selection_timbre20" id="selection_timbre20" value="unset">
+<input type="hidden" name="selection_sync21" id="selection_sync21" value="unset">
+<input type="hidden" name="selection_timbre21" id="selection_timbre21" value="unset">
+<input type="hidden" name="selection_sync22" id="selection_sync22" value="unset">
+<input type="hidden" name="selection_timbre22" id="selection_timbre22" value="unset">
+<input type="hidden" name="selection_sync23" id="selection_sync23" value="unset">
+<input type="hidden" name="selection_timbre23" id="selection_timbre23" value="unset">
+<input type="hidden" name="selection_sync24" id="selection_sync24" value="unset">
+<input type="hidden" name="selection_timbre24" id="selection_timbre24" value="unset">
+<input type="hidden" name="selection_sync25" id="selection_sync25" value="unset">
+<input type="hidden" name="selection_timbre25" id="selection_timbre25" value="unset">
+<input type="hidden" name="selection_sync26" id="selection_sync26" value="unset">
+<input type="hidden" name="selection_timbre26" id="selection_timbre26" value="unset">
+<input type="hidden" name="selection_sync27" id="selection_sync27" value="unset">
+<input type="hidden" name="selection_timbre27" id="selection_timbre27" value="unset">
+<input type="hidden" name="selection_sync28" id="selection_sync28" value="unset">
+<input type="hidden" name="selection_timbre28" id="selection_timbre28" value="unset">
+<input type="hidden" name="selection_sync29" id="selection_sync29" value="unset">
+<input type="hidden" name="selection_timbre29" id="selection_timbre29" value="unset">
+<input type="hidden" name="selection_sync30" id="selection_sync30" value="unset">
+<input type="hidden" name="selection_timbre30" id="selection_timbre30" value="unset">
+<input type="hidden" name="selection_sync31" id="selection_sync31" value="unset">
+<input type="hidden" name="selection_timbre31" id="selection_timbre31" value="unset">
+<input type="hidden" name="selection_sync32" id="selection_sync32" value="unset">
+<input type="hidden" name="selection_timbre32" id="selection_timbre32" value="unset">
+<input type="hidden" name="selection_sync33" id="selection_sync33" value="unset">
+<input type="hidden" name="selection_timbre33" id="selection_timbre33" value="unset">
+<input type="hidden" name="selection_sync34" id="selection_sync34" value="unset">
+<input type="hidden" name="selection_timbre34" id="selection_timbre34" value="unset">
+<input type="hidden" name="selection_sync35" id="selection_sync35" value="unset">
+<input type="hidden" name="selection_timbre35" id="selection_timbre35" value="unset">
+
+
+
+</body>
+
+
+</html>

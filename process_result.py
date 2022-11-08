@@ -16,6 +16,7 @@ parser.add_argument('--match_list_path', type=str, default='../SpecVQGAN/data/AM
 parser.add_argument('--action_match', action='store_true')
 parser.add_argument('--action_mismatch', action='store_true')
 parser.add_argument('--addition_exp_res', default=None)
+parser.add_argument('--new_html', action='store_true')
 
 def mean_pm(p, n):
     import scipy.stats
@@ -89,10 +90,15 @@ def plot_res(ratio, arr, pval, exp):
     plt.savefig(os.path.join(args.res_dir, f'res_{exp}.png'), dpi=300, bbox_inches='tight', pad_inches=0.2)
 
 
+def gt_equal(s, gt):
+    return s != gt and s.replace('_no_earlystop', '') != gt
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
     df = gather_csv(args)
     match_list = json.load(open(args.match_list_path, 'r'))
+    algo_pre_str = 'Answer' if args.new_html else 'Input'
 
     ans_timbre = {}
     ans_sync = {}
@@ -113,13 +119,13 @@ if __name__ == "__main__":
             df.loc[i, 'Reject'] = ''
         cnt += 1
         for j in range(args.N_practice, args.N_imgs):
-            if df.at[i, f'Input.algo_A{j}'] != args.gt:
-                pair = 'vs_' + df.at[i, f'Input.algo_A{j}']
+            if gt_equal(df.at[i, f'{algo_pre_str}.algo_A{j}'], args.gt):
+                pair = 'vs_' + df.at[i, f'{algo_pre_str}.algo_A{j}']
             else:
-                pair = 'vs_' + df.at[i, f'Input.algo_B{j}']
+                pair = 'vs_' + df.at[i, f'{algo_pre_str}.algo_B{j}']
             if 'vigilance' in pair:
                 continue
-            # task_idx = int(df.at[i, f'Input.image_A{j}'].split('/')[-1].split('.')[0])
+            # task_idx = int(df.at[i, f'{algo_pre_str}.image_A{j}'].split('/')[-1].split('.')[0])
 
             # if args.action_match and not match_list[task_idx]:
             #     continue
@@ -138,11 +144,12 @@ if __name__ == "__main__":
     json.dump(ans_sync, open(os.path.join(args.res_dir, 'ans_sync.json'), 'w'))
 
     if args.addition_exp_res is not None:
-        add_ans_timbre = json.load(open(os.path.join(args.addition_exp_res, 'ans_timbre.json'), 'r'))
-        add_ans_sync = json.load(open(os.path.join(args.addition_exp_res, 'ans_sync.json'), 'r'))
-        for k in ans_timbre.keys():
-            ans_timbre[k] += add_ans_timbre[k]
-            ans_sync[k] += add_ans_sync[k]
+        for additional_exp in args.addition_exp_res.strip().split(','):
+            add_ans_timbre = json.load(open(os.path.join(additional_exp, 'ans_timbre.json'), 'r'))
+            add_ans_sync = json.load(open(os.path.join(additional_exp, 'ans_sync.json'), 'r'))
+            for k in ans_timbre.keys():
+                ans_timbre[k] += add_ans_timbre[k]
+                ans_sync[k] += add_ans_sync[k]
 
     timbre_ratio = {}
     timbre_arr = {}
@@ -151,12 +158,12 @@ if __name__ == "__main__":
     sync_arr = {}
     sync_pval = {}
     for p in ans_timbre.keys():
-        timbre_ratio[p] = len([t for t in ans_timbre[p] if t != args.gt]) / len(ans_timbre[p])
-        timbre_arr[p] = [1 if t != args.gt else 0 for t in ans_timbre[p]]
-        timbre_pval[p] = stats.binom_test(len([t for t in ans_timbre[p] if t != args.gt]), len(ans_timbre[p]), 0.5, alternative='greater')
-        sync_ratio[p] = len([t for t in ans_sync[p] if t != args.gt]) / len(ans_sync[p])
-        sync_arr[p] = [1 if t != args.gt else 0 for t in ans_sync[p]]
-        sync_pval[p] = stats.binom_test(len([t for t in ans_sync[p] if t != args.gt]), len(ans_sync[p]), 0.5, alternative='greater')
+        timbre_ratio[p] = len([t for t in ans_timbre[p] if gt_equal(t, args.gt)]) / len(ans_timbre[p])
+        timbre_arr[p] = [1 if gt_equal(t, args.gt) else 0 for t in ans_timbre[p]]
+        timbre_pval[p] = stats.binom_test(len([t for t in ans_timbre[p] if gt_equal(t, args.gt)]), len(ans_timbre[p]), 0.5, alternative='greater')
+        sync_ratio[p] = len([t for t in ans_sync[p] if gt_equal(t, args.gt)]) / len(ans_sync[p])
+        sync_arr[p] = [1 if gt_equal(t, args.gt) else 0 for t in ans_sync[p]]
+        sync_pval[p] = stats.binom_test(len([t for t in ans_sync[p] if gt_equal(t, args.gt)]), len(ans_sync[p]), 0.5, alternative='greater')
     print('timbre', timbre_ratio, '\n')
     print('sync', sync_ratio)
 
