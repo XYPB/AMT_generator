@@ -119,12 +119,12 @@ if __name__ == "__main__":
                 pair = 'vs_' + df.at[i, f'Input.algo_B{j}']
             if 'vigilance' in pair:
                 continue
-            task_idx = int(df.at[i, f'Input.image_A{j}'].split('/')[-1].split('.')[0])
+            # task_idx = int(df.at[i, f'Input.image_A{j}'].split('/')[-1].split('.')[0])
 
-            if args.action_match and not match_list[task_idx]:
-                continue
-            if args.action_mismatch and match_list[task_idx]:
-                continue
+            # if args.action_match and not match_list[task_idx]:
+            #     continue
+            # if args.action_mismatch and match_list[task_idx]:
+            #     continue
 
             pair = pair.replace('CondAVTransformer_VNet_randshift_2s_', '').replace('_GH_vqgan', '').replace('_no_earlystop', '')
             if pair not in ans_timbre.keys():
