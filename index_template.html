@@ -169,9 +169,7 @@ function randArray(len, min, max) {
 }
 
 function randExperiment(Npairs, Npractice) {
-  const algos = ["onset_baseline", "CondAVTransformer_VNet_randshift_2s_style_transfer_GH_vqgan", "Taming_pretrained",
-		"CondAVTransformer_VNet_randshift_2s_dropcond_GH_vqgan_no_earlystop", "CondAVTransformer_VNet_randshift_2s_outside_cond_GH_vqgan_no_earlystop",
-		"CondAVTransformer_VNet_randshift_2s_dropcondvis_GH_vqgan_no_earlystop", "CondAVTransformer_VNet_randshift_2s_no_aug_GH_vqgan_no_earlystop"];
+  const algos = {{ALGORITHMS}}
   const gt_path = "CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop";
   const Nimgs = 582;
   const vigilance_idx = 133;
