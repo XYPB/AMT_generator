@@ -169,7 +169,7 @@ function randArray(len, min, max) {
 }
 
 function randExperiment(Npairs, Npractice) {
-  const algos = ["CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop_multiple"];
+  const algos = ["CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop_multiple_tolerance"];
   const gt_path = "CondAVTransformer_VNet_randshift_2s_GH_vqgan_no_earlystop";
   const Nimgs = 582;
   const vigilance_idx = 133;
@@ -186,7 +186,7 @@ function randExperiment(Npairs, Npractice) {
       if (side[i] == 0) {
         var image_A = "vigilance/" + vigilance_idx.toString() + ".mp4";
         var image_B = "target_sound/" + vigilance_idx.toString() + ".mp4";
-        sequence_helper(i,"vigilance",gt_path,target,condition,image_A,image_B);
+        sequence_helper(i, "vigilance",gt_path,target,condition,image_A,image_B);
       } else {
         var image_A = "target_sound/" + vigilance_idx.toString() + ".mp4";
         var image_B = "vigilance/" + vigilance_idx.toString() + ".mp4";
